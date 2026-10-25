@@ -1,0 +1,19 @@
+{% extends "employees/base.html" %}
+{% block title %}Manage {{ employee.full_name }} | AeroPeople{% endblock %}
+{% block content %}
+<p class="muted">HR / PEOPLE OPERATIONS</p>
+<h1>Manage employee</h1>
+<p class="muted">Update employment details, login settings and authorized portal access.</p>
+<section class="panel">
+<form method="post">
+{% csrf_token %}
+{% if form.non_field_errors %}<div class="notice error">{{ form.non_field_errors }}</div>{% endif %}
+<h2>Employment profile</h2>
+{% for field in form %}
+  {% if field.name == "username" %}<h2>Login and access</h2>{% endif %}
+  <div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}{% if field.errors %}<div class="errorlist">{{ field.errors }}</div>{% endif %}</div>
+{% endfor %}
+<div class="actions"><button type="submit">Save changes</button><a class="btn secondary" href="{% url 'employee_profile' employee.pk %}">Cancel</a></div>
+</form>
+</section>
+{% endblock %}
