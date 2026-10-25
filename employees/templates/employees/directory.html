@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Directory | AeroPeople</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #172033;
+        }
+
+        header {
+            background: #142b4a;
+            color: white;
+            padding: 22px 8%;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header p {
+            margin-bottom: 0;
+            color: #cbd8e8;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .topbar h2 {
+            margin: 0;
+        }
+
+        .back-link {
+            color: #2459a9;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .search input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #d5dce7;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .search button {
+            background: #2459a9;
+            color: white;
+            border: 0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px #17203310;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px;
+            border-bottom: 1px solid #edf0f5;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #eaf0f8;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .empty {
+            text-align: center;
+            color: #68758a;
+            padding: 30px;
+        }
+
+        .count {
+            color: #68758a;
+            margin-bottom: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #758096;
+        }
+
+        @media (max-width: 600px) {
+            .search {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+<div style="text-align: right; padding: 12px 24px;">
+    <span>Welcome, {{ request.user.username }}</span>
+
+    <form method="post" action="/accounts/logout/" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" style="margin-left: 12px; padding: 9px 16px; background: #b91c1c; color: white; border: none; border-radius: 6px; cursor: pointer;">
+            Logout
+        </button>
+    </form>
+</div>
+
+    <header>
+        <h1>AeroPeople</h1>
+        <p>Employee Management Portal</p>
+    </header>
+
+    <main>
+        <div class="topbar">
+            <h2>Employee Directory</h2>
+            <a class="back-link" href="/">← Home</a>
+        </div>
+
+        <form class="search" method="get">
+            <input
+                type="search"
+                name="q"
+                placeholder="Search employee ID, name, or email"
+                value="{{ query }}"
+            >
+            <button type="submit">Search</button>
+        </form>
+
+        <p class="count">Matching employees: {{ employees|length }}</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Full Name</th>
+                        <th>Work Email</th>
+                        <th>Department</th>
+                        <th>Job Title</th>
+                        <th>Joining Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.employee_id }}</td>
+                        <td>
+                        <a href="{% url 'employee_profile' employee.id %}">
+                            {{ employee.full_name }}
+                        </a>
+                        </td>
+                        <td>{{ employee.work_email }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td>{{ employee.job_title }}</td>
+                        <td>{{ employee.joining_date|date:"d M Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty">
+                            No employees found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        AeroPeople · Private Development Prototype
+    </footer>
+</body>
+</html>

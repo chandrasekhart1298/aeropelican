@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ employee.full_name }} | AeroPeople</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            background: #f1f5f9;
+            font-family: Arial, sans-serif;
+            color: #1e293b;
+        }
+
+        .profile-card {
+            max-width: 650px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: #17365d;
+            margin-top: 0;
+        }
+
+        .detail {
+            padding: 14px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 6px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .value {
+            font-size: 16px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 24px;
+            color: #2459a9;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <main class="profile-card">
+        <h1>Employee Profile</h1>
+
+        <div class="detail">
+            <span class="label">Employee ID</span>
+            <span class="value">{{ employee.employee_id }}</span>
+        </div>
+
+        <div class="detail">
+            <span class="label">Full Name</span>
+            <span class="value">{{ employee.full_name }}</span>
+        </div>
+
+        <div class="detail">
+            <span class="label">Work Email</span>
+            <span class="value">{{ employee.work_email }}</span>
+        </div>
+
+        <div class="detail">
+            <span class="label">Department</span>
+            <span class="value">{{ employee.department }}</span>
+        </div>
+
+        <div class="detail">
+            <span class="label">Job Title</span>
+            <span class="value">{{ employee.job_title }}</span>
+        </div>
+
+        <div class="detail">
+            <span class="label">Joining Date</span>
+            <span class="value">{{ employee.joining_date|date:"d M Y" }}</span>
+        </div>
+
+        <a href="/employees/">← Back to Employee Directory</a>
+    </main>
+</body>
+</html>
