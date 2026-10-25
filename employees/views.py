@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import EmployeeAccountForm, LeaveRequestForm
+from .forms import EmployeeAccountForm, EmployeeManageForm, LeaveRequestForm
 from .models import Attendance, AuditLog, Employee, LeaveBalance, LeaveRequest, Payslip
 from .permissions import ROLE_HR, ROLE_MANAGER, ROLE_PAYROLL, employee_or_role_allowed, has_role, linked_employee
 
@@ -69,14 +69,19 @@ def employee_directory(request):
     if not is_hr_or_admin(request.user):
         raise PermissionDenied("Only HR and administrators can access the employee directory.")
     query = request.GET.get("q", "").strip()
-    employees = Employee.objects.filter(is_active=True).select_related("user").order_by("employee_id")
+    status = request.GET.get("status", "active")
+    employees = Employee.objects.select_related("user").order_by("employee_id")
+    if status == "active":
+        employees = employees.filter(is_active=True)
+    elif status == "inactive":
+        employees = employees.filter(is_active=False)
     if query:
         employees = employees.filter(
             Q(employee_id__icontains=query) | Q(full_name__icontains=query)
             | Q(work_email__icontains=query) | Q(department__icontains=query)
             | Q(job_title__icontains=query)
         )
-    return render(request, "employees/directory.html", {"employees": employees, "query": query})
+    return render(request, "employees/directory.html", {"employees": employees, "query": query, "status": status})
 
 
 @login_required
@@ -108,6 +113,21 @@ def employee_profile(request, employee_id):
     if not employee_or_role_allowed(request.user, employee, ROLE_HR):
         raise PermissionDenied("You are not authorized to view this employee profile.")
     return render(request, "employees/profile.html", {"employee": employee})
+
+
+@login_required
+def employee_manage(request, employee_id):
+    if not is_hr_or_admin(request.user):
+        raise PermissionDenied("Only HR and administrators can manage employee records.")
+    employee = get_object_or_404(Employee.objects.select_related("user"), pk=employee_id)
+    form = EmployeeManageForm(request.POST or None, instance=employee, admin_mode=request.user.is_superuser)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            employee = form.save()
+            audit(request, "employee.profile_updated", employee)
+        messages.success(request, f"Changes saved for {employee.full_name}.")
+        return redirect("employee_profile", employee_id=employee.pk)
+    return render(request, "employees/manage_employee.html", {"form": form, "employee": employee})
 
 
 @login_required
