@@ -134,6 +134,31 @@ class AccessControlTests(TestCase):
         response = self.client.get(reverse("home"))
         self.assertContains(response, reverse("employee_create"))
 
+
+    def test_hr_can_edit_employee_details_but_not_assign_roles(self):
+        self.client.login(username="hr", password="test-password-123")
+        response = self.client.post(reverse("employee_manage", args=[self.employee.pk]), {
+            "employee_id": "T001", "full_name": "Test One Updated",
+            "work_email": "one@example.test", "department": "Platform",
+            "job_title": "Senior Developer", "joining_date": "2025-01-01",
+            "manager": "", "is_active": "on", "username": "employee",
+            "first_name": "Test", "last_name": "One", "account_email": "one@example.test",
+            "login_enabled": "on", "access_role": "HR",
+        })
+        self.assertEqual(response.status_code, 302)
+        self.employee.refresh_from_db()
+        self.employee_user.refresh_from_db()
+        self.assertEqual(self.employee.department, "Platform")
+        self.assertFalse(self.employee_user.groups.filter(name="HR").exists())
+
+    def test_employee_cannot_manage_an_employee_account(self):
+        self.client.login(username="employee", password="test-password-123")
+        self.assertEqual(self.client.get(reverse("employee_manage", args=[self.other.pk])).status_code, 403)
+
+    def test_admin_can_open_employee_management_page(self):
+        self.client.login(username="admin", password="test-password-123")
+        self.assertEqual(self.client.get(reverse("employee_manage", args=[self.employee.pk])).status_code, 200)
+
     def test_unpublished_payslip_is_not_visible_to_employee(self):
         slip = Payslip.objects.create(
             employee=self.employee, period_start=date(2025, 1, 1),
