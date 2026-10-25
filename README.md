@@ -1,38 +1,95 @@
-# AeroPeople — Employee Management Portal
+# AeroPeople — HRMS Prototype
 
-Django-based employee self-service and HR workflow prototype.
+AeroPeople is a Django-based employee services and HR workflow prototype. It includes employee account/profile management, attendance, leave requests and approvals, payslip visibility, role-based access controls, and read-only audit history.
 
-## Current modules
+> **Status:** development prototype. It is not production-ready. Do not store real employee, identity, banking, or payroll data in an exposed deployment.
 
-- Individual sign-in using Django authentication and password hashing.
-- HR/admin employee account creation that links a login to an employee profile; only superusers can assign HR, Manager, or Payroll groups.
-- Role-aware employee directory and profile access.
-- Employee attendance: Present/Clock In and Clock Out; server-recorded timestamps in Asia/Kolkata; personal history.
-- HR/admin attendance report with employee and date filters.
-- Leave requests, leave balance display, approvals, and manager direct-report scoping.
-- Published payslips for employees and payroll access for authorized staff.
-- Audit entries for important attendance, leave, account creation, and payroll actions.
-- CSRF-protected forms and responsive templates.
+## Features
 
-## Roles
+- Django authentication and password hashing.
+- Employee directory with search and active/inactive/all filters.
+- HR/admin creation of employee accounts linked to employee profiles.
+- Employee profile editing, login enable/disable, and employment status management.
+- Role assignment restricted to system administrators; supported groups are `Employee`, `HR`, `Manager`, and `Payroll`.
+- Attendance clock-in/clock-out with server-side timestamps and duplicate daily clock-in protection.
+- HR/admin attendance report filters.
+- Leave requests, balances, approval/rejection, and manager direct-report scoping.
+- Payslip visibility for the employee and authorized payroll staff; publication controls.
+- Searchable, paginated, read-only audit history for HR and system administrators.
+- CSRF-protected forms, permission checks, responsive templates, and automated Django tests.
+- GitHub Actions checks for migrations, Django system checks, and tests.
 
-Create Django groups named exactly `Employee`, `Manager`, `HR`, and `Payroll`. The employee creation form assigns the Employee group automatically. HR/admin access is limited by server-side permission checks. An administrator account is not automatically an employee; to clock in, a user must be linked to an active Employee record.
+## Role and access notes
 
-## Windows setup / update
+Django groups are used for portal roles. Only a superuser should grant privileged groups such as HR, Manager, or Payroll. A Django superuser is not automatically an employee; attendance self-service requires an active linked employee profile. Do not give the superuser login to ordinary staff.
 
-Back up `db.sqlite3` before updating. Do not delete the database.
+Audit history displays events recorded by the application; it is not yet a complete tamper-proof compliance ledger, and some events do not include detailed before/after values.
 
-```cmd
-.venv\Scripts\activate
-git pull origin feature/complete-hrms
+## Local development on Windows
+
+Open Git Bash or a terminal in the project directory. Back up `db.sqlite3` before updating, and never delete it just to resolve an environment issue.
+
+### Update an existing checkout
+
+```bash
+git status --short
+git switch feature/complete-hrms
+git pull --ff-only origin feature/complete-hrms
+source .venv/Scripts/activate
+python -m pip install -r requirements.txt
 python manage.py migrate
 python manage.py check
 python manage.py test
 python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000/accounts/login/ and sign in. Superusers can create employee accounts at `/employees/create/`; HR users with the HR group can also use this route. The form creates a Django login, hashes the password through Django's standard password system, links the user to the Employee record, and assigns the Employee group. Share initial passwords privately and encourage employees to change them after first sign-in.
+If your local branch has uncommitted changes, inspect and back them up before switching branches or pulling. Do not blindly discard changes or apply old stashes.
 
-## Important limitations
+### Fresh setup
 
-This is still a local learning prototype, not a production-ready HR/payroll system. Do not use real sensitive employee/payroll data or expose the development server publicly. Before production use, configure environment-based secrets, DEBUG=False, secure HTTPS/session settings, database backups, password reset and first-login password-change workflow, complete audit coverage, attendance correction/approval policy, and formal security review. SQLite and Django's development server are intended for local development. Payroll records do not implement Indian statutory tax, EPF, or ESI calculations.
+```bash
+git clone https://github.com/chandrasekhart1298/aeropelican.git
+cd aeropelican
+git switch feature/complete-hrms
+python -m venv .venv
+source .venv/Scripts/activate
+python -m pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py check
+python manage.py test
+python manage.py runserver
+```
+
+Open http://127.0.0.1:8000/accounts/login/ and sign in with the superuser account you created. Keep credentials private. Employee accounts can be created through the People Operations controls. Share initial passwords securely and arrange password changes through a proper password-change/reset workflow before any real-world use.
+
+## Main routes
+
+- `/accounts/login/` — sign in
+- `/` — dashboard
+- `/employees/` — employee directory (HR/admin)
+- `/employees/create/` — create linked employee login (HR/admin; privileged role assignment is admin-only)
+- `/audit-history/` — searchable audit history (HR/admin)
+- `/attendance/` — attendance
+- `/leave/` — leave requests and reviews
+- `/payroll/payslips/` — payslips and authorized payroll operations
+- `/admin/` — Django administration (superusers only)
+
+## Git workflow
+
+Work on `feature/complete-hrms` until CI and local checks pass. Review the pull request into `master` before merging; do not push directly to `master` merely to synchronize branches. After an approved merge, update local `master` with a fast-forward pull. Never force-push shared branches to resolve divergence.
+
+## Production readiness checklist
+
+Before any production deployment:
+
+- Set a strong secret via `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=false`, and restrictive `DJANGO_ALLOWED_HOSTS`.
+- Use HTTPS, secure cookies, a supported production database, and managed secrets.
+- Implement password reset, first-login password change, MFA/SSO policy, and account recovery.
+- Complete audit coverage, restrict and protect audit records, and establish retention/monitoring policy.
+- Define attendance correction and leave policy, statutory payroll calculations, payslip approvals, and reconciliation.
+- Implement backup/restore testing, data retention, privacy controls, access reviews, and incident response.
+- Run dependency/security checks, penetration testing, and a formal security review.
+- Do not rely on SQLite or Django's development server for public production hosting.
+
+Indian statutory payroll items such as income tax, EPF, and ESI are not calculated by this prototype.
