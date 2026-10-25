@@ -5,7 +5,7 @@ Django-based employee self-service and HR workflow prototype.
 ## Current modules
 
 - Individual sign-in using Django authentication and password hashing.
-- HR/admin employee account creation that links a login to an employee profile.
+- HR/admin employee account creation that links a login to an employee profile; only superusers can assign HR, Manager, or Payroll groups.
 - Role-aware employee directory and profile access.
 - Employee attendance: Present/Clock In and Clock Out; server-recorded timestamps in Asia/Kolkata; personal history.
 - HR/admin attendance report with employee and date filters.
