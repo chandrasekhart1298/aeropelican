@@ -12,9 +12,9 @@ AeroPeople is a Django-based employee services and HR workflow prototype. It inc
 - Employee profile editing, login enable/disable, and employment status management.
 - Role assignment restricted to system administrators; supported groups are `Employee`, `HR`, `Manager`, and `Payroll`.
 - Attendance clock-in/clock-out with server-side timestamps and duplicate daily clock-in protection.
-- HR/admin attendance report filters.
-- Leave requests, balances, approval/rejection, and manager direct-report scoping.
-- Payslip visibility for the employee and authorized payroll staff; publication controls.
+- HR/admin attendance report filters and recorded daily/monthly present/absent summary cards.
+- Leave requests, weekday-based requested-day estimates (Monday–Friday; holidays are not yet excluded), balances, approval/rejection with review notes, and manager direct-report scoping.
+- Payslip creation/editing for authorized payroll staff, optional PDF/JPEG/PNG attachments, protected document downloads, notes, publication controls, and employee-only visibility after publication.
 - Searchable, paginated, read-only audit history for HR and system administrators.
 - CSRF-protected forms, permission checks, responsive templates, and automated Django tests.
 - GitHub Actions checks for migrations, Django system checks, and tests.
@@ -33,8 +33,8 @@ Open Git Bash or a terminal in the project directory. Back up `db.sqlite3` befor
 
 ```bash
 git status --short
-git switch feature/complete-hrms
-git pull --ff-only origin feature/complete-hrms
+git switch feature/hrms-improvements
+git pull --ff-only origin feature/hrms-improvements
 source .venv/Scripts/activate
 python -m pip install -r requirements.txt
 python manage.py migrate
@@ -73,11 +73,13 @@ Open http://127.0.0.1:8000/accounts/login/ and sign in with the superuser accoun
 - `/attendance/` — attendance
 - `/leave/` — leave requests and reviews
 - `/payroll/payslips/` — payslips and authorized payroll operations
+- `/payroll/payslips/create/` — create a draft payslip (payroll/admin)
+- `/payroll/payslips/<id>/edit/` — edit an unpublished draft (payroll/admin)
 - `/admin/` — Django administration (superusers only)
 
 ## Git workflow
 
-Work on `feature/complete-hrms` until CI and local checks pass. Review the pull request into `master` before merging; do not push directly to `master` merely to synchronize branches. After an approved merge, update local `master` with a fast-forward pull. Never force-push shared branches to resolve divergence.
+Work on `feature/hrms-improvements` until CI and local checks pass. Review the pull request into `master` before merging; do not push directly to `master` merely to synchronize branches. After an approved merge, update local `master` with a fast-forward pull. Never force-push shared branches to resolve divergence.
 
 ## Production readiness checklist
 
