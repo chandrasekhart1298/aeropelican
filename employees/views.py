@@ -83,13 +83,16 @@ def employee_directory(request):
 def employee_create(request):
     if not is_hr_or_admin(request.user):
         raise PermissionDenied("Only HR and administrators can create employee accounts.")
-    form = EmployeeAccountForm(request.POST or None)
+    form = EmployeeAccountForm(request.POST or None, admin_mode=request.user.is_superuser)
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
             user = form.save_user()
             employee = form.save_employee(user)
             employee_group, _ = Group.objects.get_or_create(name="Employee")
             user.groups.add(employee_group)
+            selected_role = form.cleaned_data["access_role"] if request.user.is_superuser else "Employee"
+            role_group, _ = Group.objects.get_or_create(name=selected_role)
+            user.groups.add(role_group)
             audit(request, "employee.account_created", employee)
         messages.success(request, f"Account created for {employee.full_name}. Share the initial password securely.")
         return redirect("employee_profile", employee_id=employee.pk)
