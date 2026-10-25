@@ -5,6 +5,13 @@
 <p class="muted">{% if is_admin_hr %}Organization attendance report{% else %}Today's attendance · server time in Asia/Kolkata{% endif %}</p>
 
 {% if is_admin_hr %}
+<section class="grid">
+  <div class="stat"><span class="muted">Active employees</span><strong>{{ active_employee_count }}</strong></div>
+  <div class="stat"><span class="muted">Present today</span><strong>{{ daily_present_count }}</strong></div>
+  <div class="stat"><span class="muted">Absent today</span><strong>{{ daily_absent_count }}</strong></div>
+  <div class="stat"><span class="muted">Present · {{ report_month }}</span><strong>{{ monthly_present_count }}</strong><span class="muted">recorded attendance entries</span></div>
+  <div class="stat"><span class="muted">Absent · {{ report_month }}</span><strong>{{ monthly_absent_count }}</strong><span class="muted">recorded attendance entries</span></div>
+</section>
 <section class="panel">
   <h2>Filter attendance</h2>
   <form method="get">
