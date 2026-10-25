@@ -5,8 +5,13 @@ from django.utils import timezone
 
 from .models import Employee, LeaveRequest
 
-
 User = get_user_model()
+ROLE_CHOICES = (
+    ("Employee", "Employee"),
+    ("HR", "HR"),
+    ("Manager", "Manager"),
+    ("Payroll", "Payroll"),
+)
 
 
 class EmployeeAccountForm(UserCreationForm):
@@ -23,13 +28,18 @@ class EmployeeAccountForm(UserCreationForm):
         required=False,
         empty_label="No manager assigned",
     )
+    access_role = forms.ChoiceField(choices=ROLE_CHOICES, initial="Employee", label="Portal role")
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = (
-            "username", "first_name", "last_name", "email",
-            "password1", "password2",
-        )
+        fields = ("username", "first_name", "last_name", "email", "password1", "password2")
+
+    def __init__(self, *args, admin_mode=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.admin_mode = admin_mode
+        if not admin_mode:
+            self.fields["access_role"].choices = (("Employee", "Employee"),)
+            self.fields["access_role"].initial = "Employee"
 
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()
@@ -56,12 +66,10 @@ class EmployeeAccountForm(UserCreationForm):
         return Employee.objects.create(
             user=user,
             employee_id=self.cleaned_data["employee_id"].strip(),
-            full_name=" ".join(
-                part for part in (
-                    self.cleaned_data["first_name"].strip(),
-                    self.cleaned_data["last_name"].strip(),
-                ) if part
-            ),
+            full_name=" ".join(part for part in (
+                self.cleaned_data["first_name"].strip(),
+                self.cleaned_data["last_name"].strip(),
+            ) if part),
             work_email=self.cleaned_data["email"],
             department=self.cleaned_data["department"].strip(),
             job_title=self.cleaned_data["job_title"].strip(),
