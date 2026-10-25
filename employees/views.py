@@ -16,8 +16,11 @@ from .permissions import ROLE_HR, ROLE_MANAGER, ROLE_PAYROLL, employee_or_role_a
 
 
 def audit(request, action, obj):
+    subject = obj if isinstance(obj, Employee) else getattr(obj, "employee", None)
+    if subject is None:
+        subject = linked_employee(request.user)
     AuditLog.objects.create(
-        actor=request.user, action=action,
+        employee=subject, actor=request.user, action=action,
         object_type=obj.__class__.__name__, object_id=str(obj.pk),
         ip_address=request.META.get("REMOTE_ADDR"),
     )
