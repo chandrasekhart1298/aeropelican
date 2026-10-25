@@ -4,17 +4,21 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 
 from .models import AuditLog
-from .permissions import ROLE_HR, has_role
+from .permissions import ROLE_HR, has_role, linked_employee
 
 
 @login_required
 def audit_history(request):
-    if not (request.user.is_superuser or has_role(request.user, ROLE_HR)):
-        raise PermissionDenied("Only HR and system administrators can view audit history.")
+    privileged = request.user.is_superuser or has_role(request.user, ROLE_HR)
+    employee = linked_employee(request.user)
+    if not privileged and not employee:
+        raise PermissionDenied("Your login is not linked to an employee profile.")
 
     query = request.GET.get("q", "").strip()
     action = request.GET.get("action", "").strip()
-    logs = AuditLog.objects.select_related("actor").all()
+    logs = AuditLog.objects.select_related("actor", "employee")
+    if not privileged:
+        logs = logs.filter(employee=employee)
 
     if query:
         logs = logs.filter(
@@ -27,7 +31,7 @@ def audit_history(request):
         logs = logs.filter(action=action)
 
     actions = (
-        AuditLog.objects.order_by()
+        logs.order_by()
         .values_list("action", flat=True)
         .distinct()
     )
@@ -43,4 +47,5 @@ def render_audit_history(request, page, query, action, actions):
         "query": query,
         "selected_action": action,
         "actions": actions,
+        "is_privileged": privileged,
     })
