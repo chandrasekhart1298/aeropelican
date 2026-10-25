@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q, Count, Sum
 from django.shortcuts import get_object_or_404, redirect, render
+from django.http import FileResponse, Http404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
@@ -368,3 +369,18 @@ def payslip_edit(request, payslip_id):
         messages.success(request, "Payslip draft updated.")
         return redirect("payslip_detail", payslip_id=slip.pk)
     return render(request, "employees/payslip_form.html", {"form": form, "page_title": "Edit payslip", "payslip": slip})
+
+
+@login_required
+def payslip_document(request, payslip_id):
+    slip = get_object_or_404(Payslip.objects.select_related("employee"), pk=payslip_id)
+    own = linked_employee(request.user)
+    if not (is_payroll_or_admin(request.user) or (slip.published and own and own.pk == slip.employee_id)):
+        raise PermissionDenied("You are not authorized to download this payslip document.")
+    if not slip.document:
+        raise Http404("No document is attached to this payslip.")
+    try:
+        handle = slip.document.open("rb")
+    except (FileNotFoundError, OSError):
+        raise Http404("Payslip document is unavailable.")
+    return FileResponse(handle, as_attachment=True, filename=slip.document.name.rsplit("/", 1)[-1])
