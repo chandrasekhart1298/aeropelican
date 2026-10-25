@@ -1,119 +1,41 @@
 # AeroPeople — Employee Management Portal
 
-AeroPeople is a Django-based employee management portal prototype built to practise real-world web application development.
+Django-based employee self-service and HR workflow learning prototype.
 
-## Project Goals
+## Modules in this branch
 
-The goal is to build a simple, organized portal for viewing employee information and managing employee records.
+- Login-protected dashboard and employee account linking
+- Employee directory restricted to HR and superusers
+- Employee profiles with owner-only access unless HR/admin
+- Attendance clock-in/out and personal history
+- Leave requests, reviewer decisions, and leave balances
+- Payslip records, employee access to published payslips, payroll publishing
+- Audit entries for key portal actions
+- CSRF-protected forms and responsive HTML templates
+- Django admin interface intended for superuser-only access
 
-## Technology Stack
+## Role setup
 
-- **Language:** Python
-- **Web Framework:** Django
-- **Database:** SQLite
-- **Frontend:** HTML and CSS
-- **Version Control:** Git and GitHub
+Create Django Groups named exactly Employee, Manager, HR, and Payroll and assign users through the admin. Superusers have full portal access. Employee accounts must be explicitly linked to the matching Employee row.
 
-## Current Features
+- Employee: own profile, attendance, leave, published payslips.
+- Manager: leave review permission in this prototype. Team-only scoping is not yet implemented; review access is organization-wide, so do not use with real employee records.
+- HR: employee directory/profiles and leave review.
+- Payroll: payslip listing and publishing.
+- Superuser: full administrative access and account linking.
 
-- Employee portal home page
-- Login and logout
-- Employee directory
-- Search employees by ID, name, or work email
-- Employee profile page
-- Django admin panel for managing employee records
-- Database models for employee information
+## Setup (Windows)
 
-## Project Structure
+Back up your local db.sqlite3 first. This branch adds a migration and does not ask you to delete the database.
 
-```text
-AeroPeople/
-├── config/                  # Django project configuration
-├── employees/               # Employee application
-│   ├── migrations/          # Database migrations
-│   ├── templates/
-│   │   ├── employees/       # Portal pages
-│   │   └── registration/    # Login page
-│   ├── models.py            # Employee database model
-│   ├── views.py             # Application views
-│   ├── urls.py              # Application routes
-│   └── admin.py             # Django admin configuration
-├── .gitignore               # Files excluded from Git
-├── manage.py                # Django management command
-└── README.md                # Project documentation
-```
+    .venv\\Scripts\\activate
+    python manage.py migrate
+    python manage.py check
+    python manage.py test
+    python manage.py runserver
 
-## Run Locally on Windows
+If cloning without a virtual environment, create one and install Django 6.1.2 first. Open http://127.0.0.1:8000/ and sign in. Use /admin/ to create groups, accounts, employee records, leave balances and payslips. Assign the correct user link on each Employee record.
 
-### 1. Clone the repository
+## Prototype limitations
 
-```bash
-git clone https://github.com/chandrasekhart1298/aeropelican.git
-cd aeropelican
-```
-
-### 2. Create and activate a virtual environment
-
-```cmd
-python -m venv .venv
-.venv\Scripts\activate
-```
-
-### 3. Install Django
-
-```bash
-python -m pip install "Django==6.1.2"
-```
-
-### 4. Apply database migrations
-
-```bash
-python manage.py migrate
-```
-
-### 5. Create an administrator account
-
-```bash
-python manage.py createsuperuser
-```
-
-Follow the prompts to create your own local administrator account.
-
-### 6. Start the development server
-
-```bash
-python manage.py runserver
-```
-
-Open these addresses in your browser:
-
-- Portal: http://127.0.0.1:8000/
-- Employee directory: http://127.0.0.1:8000/employees/
-- Admin panel: http://127.0.0.1:8000/admin/
-
-## Planned Improvements
-
-- Improve the portal's visual design
-- Add employee creation, editing, and deletion
-- Add role-based permissions
-- Add employee attendance management
-- Add leave request management
-- Add dashboard statistics
-- Add automated tests
-- Prepare secure deployment configuration
-
-## Development Status
-
-**Status:** Work in progress
-
-This is a learning and development prototype. Use fictional test data only. It is not yet approved or configured for production use with real company employee information.
-
-## Author
-
-**Chandrasekhar Thammisetty**
-
-GitHub: https://github.com/ChandrasekharThammisetty2002
-
----
-
-Built as a hands-on project to learn Django and employee portal development.
+This is not a production HR/payroll system. Before real use, implement manager/team scoping, robust leave balance handling for overlapping requests and partial days, attendance policies and anti-tampering controls, complete audit coverage, deployment secrets/security, backups, and automated end-to-end tests. Payroll amounts are stored but Indian statutory tax/EPF/ESI calculations are not implemented. SQLite and Django's development server are for local development only. Use fictional data while learning.
