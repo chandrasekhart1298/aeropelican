@@ -182,8 +182,8 @@ class AccessControlTests(TestCase):
         self.client.login(username="employee", password="test-password-123")
         response = self.client.get(reverse("leave_list"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Personal")
-        self.assertNotContains(response, "Other employee")
+        self.assertContains(response, "Test One")
+        self.assertNotContains(response, "Test Two")
 
     def test_employee_payslip_list_shows_only_own_published_slips(self):
         own_slip = Payslip.objects.create(
@@ -197,8 +197,9 @@ class AccessControlTests(TestCase):
         self.client.login(username="employee", password="test-password-123")
         response = self.client.get(reverse("payslip_list"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, str(own_slip.employee.full_name))
-        self.assertNotContains(response, str(self.other.full_name))
+        self.assertContains(response, reverse("payslip_detail", args=[own_slip.pk]))
+        other_slip = Payslip.objects.get(employee=self.other, period_start=date(2026, 1, 1))
+        self.assertNotContains(response, reverse("payslip_detail", args=[other_slip.pk]))
 
     def test_employee_cannot_open_or_download_another_employees_payslip(self):
         slip = Payslip.objects.create(
