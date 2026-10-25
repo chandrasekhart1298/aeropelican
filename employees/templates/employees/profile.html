@@ -5,90 +5,332 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ employee.full_name }} | AeroPeople</title>
+
     <style>
-        body {
+        * {
             margin: 0;
-            padding: 30px 16px;
-            background: #f1f5f9;
-            font-family: Arial, sans-serif;
-            color: #1e293b;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #e5eaf2;
+            padding: 18px 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .brand {
+            color: #183b70;
+            font-size: 25px;
+            font-weight: 750;
+        }
+
+        .brand span {
+            color: #2584e8;
+        }
+
+        .nav-link {
+            color: #2467ad;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 88%;
+            max-width: 1000px;
+            margin: 38px auto;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: #7b8798;
+            margin-bottom: 22px;
+        }
+
+        .breadcrumb a {
+            color: #246fbd;
+            text-decoration: none;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .page-heading p {
+            color: #718096;
+            font-size: 14px;
         }
 
         .profile-card {
-            max-width: 650px;
-            margin: 30px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+            background: #fff;
+            border: 1px solid #e5eaf2;
+            border-radius: 16px;
+            overflow: hidden;
         }
 
-        h1 {
-            color: #17365d;
-            margin-top: 0;
+        .profile-banner {
+            background: linear-gradient(120deg, #15396b, #246fbd);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            color: #fff;
         }
 
-        .detail {
-            padding: 14px 0;
-            border-bottom: 1px solid #e2e8f0;
+        .avatar {
+            width: 76px;
+            height: 76px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            color: #205d9f;
+            border-radius: 50%;
+            font-size: 29px;
+            font-weight: 750;
         }
 
-        .label {
-            display: block;
-            margin-bottom: 6px;
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        .value {
-            font-size: 16px;
-            font-weight: bold;
+        .profile-banner h2 {
+            font-size: 25px;
+            margin-bottom: 8px;
             overflow-wrap: anywhere;
         }
 
-        a {
+        .profile-banner p {
+            color: #e0edff;
+            font-size: 14px;
+        }
+
+        .id-badge {
             display: inline-block;
-            margin-top: 24px;
-            color: #2459a9;
+            margin-top: 10px;
+            padding: 6px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.12);
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .details {
+            padding: 30px;
+        }
+
+        .details-heading {
+            font-size: 18px;
+            margin-bottom: 22px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .detail-item {
+            padding: 20px;
+            background: #f8fafd;
+            border: 1px solid #e9eef5;
+            border-radius: 10px;
+            min-width: 0;
+        }
+
+        .detail-label {
+            color: #748196;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .detail-value {
+            color: #25364c;
+            font-size: 15px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 25px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 18px;
+            background: #2167b4;
+            color: #fff;
+            border-radius: 8px;
             text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-button:hover {
+            background: #184f91;
+        }
+
+        .note {
+            color: #8994a5;
+            font-size: 12px;
+        }
+
+        footer {
+            text-align: center;
+            color: #8994a5;
+            font-size: 12px;
+            padding: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 16px 5%;
+            }
+
+            .container {
+                width: 92%;
+                margin-top: 25px;
+            }
+
+            .profile-banner {
+                padding: 25px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-banner h2 {
+                font-size: 22px;
+            }
+
+            .details {
+                padding: 20px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-heading h1 {
+                font-size: 26px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <main class="profile-card">
-        <h1>Employee Profile</h1>
+    <header class="navbar">
+        <div class="brand">Aero<span>People</span></div>
+        <a class="nav-link" href="{% url 'employee_directory' %}">
+            Employee Directory
+        </a>
+    </header>
 
-        <div class="detail">
-            <span class="label">Employee ID</span>
-            <span class="value">{{ employee.employee_id }}</span>
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="/">Home</a> /
+            <a href="{% url 'employee_directory' %}">Employees</a> /
+            Profile
         </div>
 
-        <div class="detail">
-            <span class="label">Full Name</span>
-            <span class="value">{{ employee.full_name }}</span>
-        </div>
+        <section class="page-heading">
+            <h1>Employee Profile</h1>
+            <p>View the employee information available in the development portal.</p>
+        </section>
 
-        <div class="detail">
-            <span class="label">Work Email</span>
-            <span class="value">{{ employee.work_email }}</span>
-        </div>
+        <section class="profile-card">
+            <div class="profile-banner">
+                <div class="avatar">
+                    {{ employee.full_name|first|upper }}
+                </div>
 
-        <div class="detail">
-            <span class="label">Department</span>
-            <span class="value">{{ employee.department }}</span>
-        </div>
+                <div>
+                    <h2>{{ employee.full_name }}</h2>
+                    <p>{{ employee.job_title }}</p>
+                    <span class="id-badge">
+                        Employee ID: {{ employee.employee_id }}
+                    </span>
+                </div>
+            </div>
 
-        <div class="detail">
-            <span class="label">Job Title</span>
-            <span class="value">{{ employee.job_title }}</span>
-        </div>
+            <div class="details">
+                <h3 class="details-heading">Employee Information</h3>
 
-        <div class="detail">
-            <span class="label">Joining Date</span>
-            <span class="value">{{ employee.joining_date|date:"d M Y" }}</span>
-        </div>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Full Name</div>
+                        <div class="detail-value">{{ employee.full_name }}</div>
+                    </div>
 
-        <a href="/employees/">← Back to Employee Directory</a>
+                    <div class="detail-item">
+                        <div class="detail-label">Employee ID</div>
+                        <div class="detail-value">{{ employee.employee_id }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">Work Email</div>
+                        <div class="detail-value">{{ employee.work_email }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">Department</div>
+                        <div class="detail-value">{{ employee.department }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">Job Title</div>
+                        <div class="detail-value">{{ employee.job_title }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">Joining Date</div>
+                        <div class="detail-value">
+                            {{ employee.joining_date|date:"d M Y" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a
+                        class="back-button"
+                        href="{% url 'employee_directory' %}"
+                    >
+                        &larr; Back to Directory
+                    </a>
+
+                    <span class="note">Development prototype · Read-only profile</span>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer>
+        AeroPeople &copy; 2026 | Employee Management Portal Prototype
+    </footer>
 </body>
 </html>

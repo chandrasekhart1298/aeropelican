@@ -5,106 +5,244 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AeroPeople | Employee Portal</title>
+
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f6fb;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fb;
             color: #172033;
+            min-height: 100vh;
         }
 
-        header {
-            background: #142b4a;
-            color: white;
-            padding: 22px 8%;
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e5eaf2;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 26px;
+        .brand {
+            color: #183b70;
+            font-size: 25px;
+            font-weight: 750;
+            letter-spacing: -0.5px;
         }
 
-        header p {
-            margin: 7px 0 0;
-            color: #cbd8e8;
+        .brand span {
+            color: #2584e8;
         }
 
-        main {
-            max-width: 1000px;
-            margin: 60px auto;
-            padding: 0 24px;
+        .nav-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .container {
+            width: 86%;
+            max-width: 1200px;
+            margin: 45px auto;
         }
 
         .welcome {
-            background: white;
-            padding: 40px;
-            border-radius: 14px;
-            box-shadow: 0 8px 28px #17203312;
+            background: linear-gradient(120deg, #15396b, #246fbd);
+            color: white;
+            border-radius: 18px;
+            padding: 42px;
+            box-shadow: 0 12px 30px rgba(28, 70, 120, 0.12);
         }
 
-        .welcome h2 {
-            font-size: 32px;
-            margin-top: 0;
+        .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 18px;
+        }
+
+        .welcome h1 {
+            font-size: clamp(28px, 4vw, 42px);
+            margin-bottom: 14px;
         }
 
         .welcome p {
-            color: #596579;
+            max-width: 650px;
+            color: #e2edff;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 13px 21px;
+            background: #ffffff;
+            color: #194d8d;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 650;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background: #eaf3ff;
+        }
+
+        .section-title {
+            margin: 35px 0 18px;
+            font-size: 21px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e7ecf3;
+            border-radius: 14px;
+            padding: 25px;
+        }
+
+        .card-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: #eaf3ff;
+            color: #2167b4;
+            border-radius: 12px;
+            font-size: 22px;
+            margin-bottom: 18px;
+        }
+
+        .card h3 {
+            font-size: 17px;
+            margin-bottom: 9px;
+        }
+
+        .card p {
+            color: #64748b;
+            font-size: 14px;
             line-height: 1.7;
         }
 
         .status {
-            display: inline-block;
-            background: #e2f8ec;
-            color: #17683b;
-            padding: 8px 12px;
-            border-radius: 20px;
+            margin-top: 28px;
+            padding: 18px 22px;
+            border: 1px solid #dce8f8;
+            background: #edf5ff;
+            border-radius: 12px;
+            color: #31577e;
             font-size: 13px;
+            line-height: 1.7;
         }
 
         footer {
             text-align: center;
-            color: #758096;
+            color: #8490a3;
+            font-size: 12px;
             padding: 25px;
+        }
+
+        @media (max-width: 750px) {
+            .navbar {
+                padding: 17px 6%;
+            }
+
+            .container {
+                width: 90%;
+                margin-top: 25px;
+            }
+
+            .welcome {
+                padding: 28px 23px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
-    <header>
-        <h1>AeroPeople</h1>
-        <p>Employee Management Portal</p>
+    <header class="navbar">
+        <div class="brand">Aero<span>People</span></div>
+        <div class="nav-label">Employee Management Portal</div>
     </header>
 
-    <main>
+    <main class="container">
         <section class="welcome">
-            <span class="status">Development Prototype</span>
-            <h2>Welcome to AeroPeople</h2>
-            <p>
-                A central place to manage employee information,
-                access profiles, and support everyday HR operations.
-            </p>
-            <p>
-                We're building this portal step by step, starting
-                with the employee management foundation.
-            </p>
-            
-<p style="margin-top: 24px;">
-    <a href="/employees/"
-       style="display: inline-block; background: #2459a9;
-              color: white; padding: 12px 20px;
-              border-radius: 8px; text-decoration: none;">
-        View Employee Directory
-    </a>
-</p>
+            <div class="tag">DEVELOPMENT PROTOTYPE</div>
 
+            <h1>Welcome to AeroPeople</h1>
+
+            <p>
+                Your employee information hub. Explore the employee directory,
+                view employee profiles, and manage test records through the
+                development portal.
+            </p>
+
+            <a class="button" href="/employees/">
+                Explore Employee Directory &rarr;
+            </a>
         </section>
+
+        <h2 class="section-title">Portal Overview</h2>
+
+        <section class="cards">
+            <article class="card">
+                <div class="card-icon">&#128101;</div>
+                <h3>Employee Directory</h3>
+                <p>
+                    Browse employee records and search by employee ID,
+                    name, or work email.
+                </p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">&#128100;</div>
+                <h3>Employee Profiles</h3>
+                <p>
+                    View available employee details, including department,
+                    job title, and joining date.
+                </p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">&#128274;</div>
+                <h3>Secure Sign-in</h3>
+                <p>
+                    Access protected employee pages after signing in with
+                    your development account.
+                </p>
+            </article>
+        </section>
+
+        <div class="status">
+            <strong>Development status:</strong>
+            AeroPeople is a work-in-progress learning prototype.
+            Use fictional test records only. Production deployment and
+            company-system integration are not configured.
+        </div>
     </main>
 
     <footer>
-        AeroPeople · Private Development Prototype
+        AeroPeople &copy; 2026 | Employee Management Portal Prototype
     </footer>
 </body>
 </html>

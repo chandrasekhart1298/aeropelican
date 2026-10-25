@@ -5,207 +5,374 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Directory | AeroPeople</title>
+
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f6fb;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fb;
             color: #172033;
         }
 
-        header {
-            background: #142b4a;
-            color: white;
-            padding: 22px 8%;
-        }
-
-        header h1 {
-            margin: 0;
-        }
-
-        header p {
-            margin-bottom: 0;
-            color: #cbd8e8;
-        }
-
-        main {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .topbar {
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e5eaf2;
+            padding: 18px 7%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
             flex-wrap: wrap;
-            margin-bottom: 22px;
+            gap: 14px;
         }
 
-        .topbar h2 {
-            margin: 0;
+        .brand {
+            color: #183b70;
+            font-size: 25px;
+            font-weight: 750;
         }
 
-        .back-link {
-            color: #2459a9;
+        .brand span {
+            color: #2584e8;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .username {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .logout {
+            background: #fff;
+            color: #31577e;
+            border: 1px solid #d9e2ee;
+            border-radius: 7px;
+            padding: 9px 14px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .logout:hover {
+            background: #f0f5fc;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 35px auto;
+        }
+
+        .breadcrumb {
+            margin-bottom: 20px;
+            color: #7b8798;
+            font-size: 13px;
+        }
+
+        .breadcrumb a {
+            color: #246fbd;
             text-decoration: none;
-            font-weight: bold;
         }
 
-        .search {
+        .heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .heading h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .heading p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .count {
+            background: #e6f1ff;
+            color: #245f9d;
+            padding: 9px 13px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .panel {
+            background: #ffffff;
+            border: 1px solid #e6ebf2;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .search-area {
+            padding: 22px;
+            border-bottom: 1px solid #e8edf4;
+        }
+
+        .search-area label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .search-form {
             display: flex;
             gap: 10px;
-            margin-bottom: 22px;
         }
 
-        .search input {
+        .search-form input {
             flex: 1;
             min-width: 0;
-            padding: 12px;
-            border: 1px solid #d5dce7;
+            padding: 12px 14px;
+            border: 1px solid #d8e1ed;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
+            outline: none;
         }
 
-        .search button {
-            background: #2459a9;
-            color: white;
-            border: 0;
-            padding: 12px 20px;
+        .search-form input:focus {
+            border-color: #3485d5;
+            box-shadow: 0 0 0 3px #e5f1ff;
+        }
+
+        .search-button {
+            border: none;
             border-radius: 8px;
+            background: #2167b4;
+            color: white;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
         }
 
-        .table-wrap {
+        .search-button:hover {
+            background: #184f91;
+        }
+
+        .table-wrapper {
             overflow-x: auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px #17203310;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-        }
-
-        th, td {
-            padding: 16px;
-            border-bottom: 1px solid #edf0f5;
             white-space: nowrap;
         }
 
+        thead {
+            background: #f8fafd;
+        }
+
         th {
-            background: #eaf0f8;
-            font-size: 13px;
+            color: #68778b;
+            font-size: 11px;
             text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-weight: 700;
+            padding: 16px 20px;
+        }
+
+        td {
+            padding: 18px 20px;
+            border-top: 1px solid #edf1f6;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #f8fbff;
+        }
+
+        .employee-id {
+            color: #41617f;
+            font-weight: 600;
+        }
+
+        .employee-name {
+            color: #1d5fa7;
+            text-decoration: none;
+            font-weight: 650;
+        }
+
+        .employee-name:hover {
+            text-decoration: underline;
+        }
+
+        .department {
+            display: inline-block;
+            background: #eef4fb;
+            color: #46627f;
+            border-radius: 20px;
+            padding: 6px 10px;
+            font-size: 12px;
         }
 
         .empty {
             text-align: center;
-            color: #68758a;
-            padding: 30px;
+            padding: 45px 20px;
+            color: #718096;
+            line-height: 1.8;
         }
 
-        .count {
-            color: #68758a;
-            margin-bottom: 14px;
+        .empty strong {
+            display: block;
+            color: #34445a;
+            font-size: 17px;
+            margin-bottom: 7px;
         }
 
-        footer {
-            text-align: center;
-            padding: 25px;
-            color: #758096;
+        .footer {
+            padding: 17px 22px;
+            border-top: 1px solid #edf1f6;
+            color: #8a96a7;
+            font-size: 12px;
         }
 
         @media (max-width: 600px) {
-            .search {
+            .navbar {
+                padding: 16px 5%;
+            }
+
+            .container {
+                width: 94%;
+                margin-top: 25px;
+            }
+
+            .heading h1 {
+                font-size: 25px;
+            }
+
+            .search-form {
                 flex-direction: column;
+            }
+
+            .search-button {
+                width: 100%;
             }
         }
     </style>
 </head>
+
 <body>
-    
-<div style="text-align: right; padding: 12px 24px;">
-    <span>Welcome, {{ request.user.username }}</span>
+    <header class="navbar">
+        <div class="brand">Aero<span>People</span></div>
 
-    <form method="post" action="/accounts/logout/" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" style="margin-left: 12px; padding: 9px 16px; background: #b91c1c; color: white; border: none; border-radius: 6px; cursor: pointer;">
-            Logout
-        </button>
-    </form>
-</div>
+        <div class="nav-actions">
+            <span class="username">
+                Signed in as <strong>{{ request.user.username }}</strong>
+            </span>
 
-    <header>
-        <h1>AeroPeople</h1>
-        <p>Employee Management Portal</p>
+            <form method="post" action="/accounts/logout/">
+                {% csrf_token %}
+                <button class="logout" type="submit">Sign out</button>
+            </form>
+        </div>
     </header>
 
-    <main>
-        <div class="topbar">
-            <h2>Employee Directory</h2>
-            <a class="back-link" href="/">← Home</a>
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="/">Home</a> / Employee Directory
         </div>
 
-        <form class="search" method="get">
-            <input
-                type="search"
-                name="q"
-                placeholder="Search employee ID, name, or email"
-                value="{{ query }}"
-            >
-            <button type="submit">Search</button>
-        </form>
+        <section class="heading">
+            <div>
+                <h1>Employee Directory</h1>
+                <p>Search and explore employee information.</p>
+            </div>
 
-        <p class="count">Matching employees: {{ employees|length }}</p>
+            <div class="count">
+                {{ employees|length }} employee{{ employees|length|pluralize }}
+            </div>
+        </section>
 
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Employee ID</th>
-                        <th>Full Name</th>
-                        <th>Work Email</th>
-                        <th>Department</th>
-                        <th>Job Title</th>
-                        <th>Joining Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for employee in employees %}
-                    <tr>
-                        <td>{{ employee.employee_id }}</td>
-                        <td>
-                        <a href="{% url 'employee_profile' employee.id %}">
-                            {{ employee.full_name }}
-                        </a>
-                        </td>
-                        <td>{{ employee.work_email }}</td>
-                        <td>{{ employee.department }}</td>
-                        <td>{{ employee.job_title }}</td>
-                        <td>{{ employee.joining_date|date:"d M Y" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="empty">
-                            No employees found.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <section class="panel">
+            <div class="search-area">
+                <form class="search-form" method="get">
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ query }}"
+                        placeholder="Search by employee ID, name, or email..."
+                        aria-label="Search employees"
+                    >
+                    <button class="search-button" type="submit">
+                        Search
+                    </button>
+                </form>
+            </div>
+
+            {% if employees %}
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Full Name</th>
+                                <th>Work Email</th>
+                                <th>Department</th>
+                                <th>Job Title</th>
+                                <th>Joining Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for employee in employees %}
+                                <tr>
+                                    <td class="employee-id">
+                                        {{ employee.employee_id }}
+                                    </td>
+                                    <td>
+                                        <a
+                                            class="employee-name"
+                                            href="{% url 'employee_profile' employee.id %}"
+                                        >
+                                            {{ employee.full_name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ employee.work_email }}</td>
+                                    <td>
+                                        <span class="department">
+                                            {{ employee.department }}
+                                        </span>
+                                    </td>
+                                    <td>{{ employee.job_title }}</td>
+                                    <td>{{ employee.joining_date|date:"d M Y" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty">
+                    <strong>No employees found</strong>
+                    {% if query %}
+                        Try another employee ID, name, or email.
+                    {% else %}
+                        Add a fictional test employee through the Django admin panel.
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="footer">
+                Showing {{ employees|length }} matching employee{{ employees|length|pluralize }}.
+                Development prototype.
+            </div>
+        </section>
     </main>
-
-    <footer>
-        AeroPeople · Private Development Prototype
-    </footer>
 </body>
 </html>
