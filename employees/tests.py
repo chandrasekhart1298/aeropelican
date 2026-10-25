@@ -79,6 +79,61 @@ class AccessControlTests(TestCase):
         self.assertEqual(self.client.post(reverse("clock_in")).status_code, 403)
         self.assertFalse(Attendance.objects.exists())
 
+    def _valid_employee_payload(self, **overrides):
+        payload = {
+            "username": "newstaff",
+            "email": "newstaff@example.test",
+            "first_name": "New",
+            "last_name": "Staff",
+            "employee_id": "T003",
+            "department": "Engineering",
+            "job_title": "Engineer",
+            "joining_date": "2026-01-01",
+            "manager": "",
+            "password1": "SafeTestPassword#2026",
+            "password2": "SafeTestPassword#2026",
+            "access_role": "Employee",
+        }
+        payload.update(overrides)
+        return payload
+
+    def test_admin_can_create_linked_employee_login_and_assign_hr_role(self):
+        self.client.login(username="admin", password="test-password-123")
+        response = self.client.post(
+            reverse("employee_create"),
+            self._valid_employee_payload(
+                username="newhr", email="newhr@example.test",
+                employee_id="T003", access_role="HR",
+            ),
+        )
+        self.assertEqual(response.status_code, 302)
+        user = User.objects.get(username="newhr")
+        employee = Employee.objects.get(employee_id="T003")
+        self.assertEqual(employee.user, user)
+        self.assertTrue(user.check_password("SafeTestPassword#2026"))
+        self.assertTrue(user.groups.filter(name="HR").exists())
+        self.assertFalse(user.is_superuser)
+
+    def test_hr_can_create_employee_but_cannot_assign_privileged_role(self):
+        self.client.login(username="hr", password="test-password-123")
+        response = self.client.post(
+            reverse("employee_create"),
+            self._valid_employee_payload(access_role="HR"),
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username="newstaff").exists())
+        self.assertFalse(Employee.objects.filter(employee_id="T003").exists())
+
+    def test_employee_cannot_create_user_login(self):
+        self.client.login(username="employee", password="test-password-123")
+        response = self.client.get(reverse("employee_create"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_hr_sees_account_creation_navigation(self):
+        self.client.login(username="hr", password="test-password-123")
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, reverse("employee_create"))
+
     def test_unpublished_payslip_is_not_visible_to_employee(self):
         slip = Payslip.objects.create(
             employee=self.employee, period_start=date(2025, 1, 1),
