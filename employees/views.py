@@ -320,7 +320,7 @@ def payslip_detail(request, payslip_id):
         slip.published and own and own.pk == slip.employee_id
     )):
         raise PermissionDenied("You are not authorized to view this payslip.")
-    return render(request, "employees/payslip_detail.html", {"payslip": slip})
+    return render(request, "employees/payslip_detail.html", {"payslip": slip, "can_manage_payroll": is_payroll_or_admin(request.user)})
 
 
 @login_required
