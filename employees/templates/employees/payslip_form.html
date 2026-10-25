@@ -1,0 +1,21 @@
+{% extends "employees/base.html" %}
+{% block title %}{{ page_title }} | AeroPeople{% endblock %}
+{% block content %}
+<h1>{{ page_title }}</h1>
+<p class="muted">Create a payroll draft, verify the amounts and document, then publish it for the employee.</p>
+<section class="panel">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}<div class="notice error">{{ error }}</div>{% endfor %}
+      </div>
+    {% endfor %}
+    {% if payslip and payslip.document %}<p>Current document: <a href="{% url 'payslip_detail' payslip.id %}">View payslip details</a></p>{% endif %}
+    <div class="actions"><button type="submit">Save draft</button><a class="btn secondary" href="{% url 'payslip_list' %}">Cancel</a></div>
+  </form>
+</section>
+{% endblock %}
