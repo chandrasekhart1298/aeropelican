@@ -6,6 +6,7 @@ urlpatterns = [
     path("employees/", views.employee_directory, name="employee_directory"),
     path("employees/create/", views.employee_create, name="employee_create"),
     path("employees/<int:employee_id>/", views.employee_profile, name="employee_profile"),
+    path("employees/<int:employee_id>/manage/", views.employee_manage, name="employee_manage"),
     path("attendance/", views.attendance, name="attendance"),
     path("attendance/clock-in/", views.clock_in, name="clock_in"),
     path("attendance/clock-out/", views.clock_out, name="clock_out"),
