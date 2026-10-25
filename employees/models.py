@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -13,8 +14,7 @@ class Employee(models.Model):
     job_title = models.CharField(max_length=100)
     joining_date = models.DateField()
     is_active = models.BooleanField(default=True)
-    def __str__(self):
-        return f"{self.employee_id} - {self.full_name}"
+    def __str__(self): return f"{self.employee_id} - {self.full_name}"
 
 class Attendance(models.Model):
     class Status(models.TextChoices):
@@ -44,7 +44,7 @@ class LeaveBalance(models.Model):
     entitled_days = models.DecimalField(max_digits=5, decimal_places=1, default=12, validators=[MinValueValidator(0)])
     used_days = models.DecimalField(max_digits=5, decimal_places=1, default=0, validators=[MinValueValidator(0)])
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["employee","leave_type","year"], name="unique_employee_leave_balance_year")]
+        constraints = [models.UniqueConstraint(fields=["employee", "leave_type", "year"], name="unique_employee_leave_balance_year")]
     @property
     def remaining_days(self): return self.entitled_days-self.used_days
     def __str__(self): return f"{self.employee} — {self.leave_type} ({self.year})"
@@ -68,7 +68,13 @@ class LeaveRequest(models.Model):
     class Meta: ordering = ["-created_at"]
     @property
     def requested_days(self):
-        return (self.end_date-self.start_date).days+1 if self.end_date >= self.start_date else 0
+        if self.end_date < self.start_date: return 0
+        days = 0
+        current = self.start_date
+        while current <= self.end_date:
+            if current.weekday() < 5: days += 1
+            current += timedelta(days=1)
+        return days
     def __str__(self): return f"{self.employee} — {self.start_date} to {self.end_date}"
 
 class Payslip(models.Model):
@@ -79,12 +85,14 @@ class Payslip(models.Model):
     basic_pay = models.DecimalField(max_digits=12, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     allowances = models.DecimalField(max_digits=12, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     deductions = models.DecimalField(max_digits=12, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    document = models.FileField(upload_to="payslips/%Y/%m/", blank=True, null=True)
+    notes = models.CharField(max_length=500, blank=True)
     published = models.BooleanField(default=False)
     published_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         ordering = ["-period_end"]
-        constraints = [models.UniqueConstraint(fields=["employee","period_start","period_end"], name="unique_employee_payslip_period")]
+        constraints = [models.UniqueConstraint(fields=["employee", "period_start", "period_end"], name="unique_employee_payslip_period")]
     @property
     def gross_pay(self): return self.basic_pay+self.allowances
     @property
