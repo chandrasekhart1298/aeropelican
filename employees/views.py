@@ -120,6 +120,8 @@ def employee_manage(request, employee_id):
     if not is_hr_or_admin(request.user):
         raise PermissionDenied("Only HR and administrators can manage employee records.")
     employee = get_object_or_404(Employee.objects.select_related("user"), pk=employee_id)
+    if employee.user_id and employee.user.is_superuser:
+        raise PermissionDenied("System administrator accounts are protected from employee self-service management.")
     form = EmployeeManageForm(request.POST or None, instance=employee, admin_mode=request.user.is_superuser)
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
