@@ -4,12 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import EmployeeAccountForm, EmployeeManageForm, LeaveRequestForm
+from .forms import EmployeeAccountForm, EmployeeManageForm, LeaveRequestForm, PayslipForm
 from .models import Attendance, AuditLog, Employee, LeaveBalance, LeaveRequest, Payslip
 from .permissions import ROLE_HR, ROLE_MANAGER, ROLE_PAYROLL, employee_or_role_allowed, has_role, linked_employee
 
@@ -155,10 +155,24 @@ def attendance(request):
         selected_employee = selected_date = ""
     else:
         raise PermissionDenied("Your login is not linked to an active employee profile. Contact HR.")
+    summary = {}
+    if is_admin_hr:
+        report_date = timezone.localdate()
+        daily = Attendance.objects.filter(work_date=report_date)
+        monthly = Attendance.objects.filter(work_date__year=report_date.year, work_date__month=report_date.month)
+        summary = {
+            "active_employee_count": Employee.objects.filter(is_active=True).count(),
+            "daily_present_count": daily.filter(status__in=[Attendance.Status.PRESENT, Attendance.Status.LATE]).count(),
+            "daily_absent_count": daily.filter(status=Attendance.Status.ABSENT).count(),
+            "monthly_present_count": monthly.filter(status__in=[Attendance.Status.PRESENT, Attendance.Status.LATE]).count(),
+            "monthly_absent_count": monthly.filter(status=Attendance.Status.ABSENT).count(),
+            "report_month": report_date.strftime("%B %Y"),
+        }
     return render(request, "employees/attendance.html", {
         "record": record, "history": history[:200] if is_admin_hr else history,
         "is_admin_hr": is_admin_hr, "employee": employee, "employees": employees,
         "selected_employee": selected_employee, "selected_date": selected_date,
+        **summary,
     })
 
 
@@ -322,3 +336,35 @@ def payslip_publish(request, payslip_id):
             audit(request, "payroll.payslip_published", slip)
     messages.success(request, "Payslip published.")
     return redirect("payslip_list")
+
+
+@login_required
+def payslip_create(request):
+    if not is_payroll_or_admin(request.user):
+        raise PermissionDenied("Only payroll staff can create payslips.")
+    form = PayslipForm(request.POST or None, request.FILES or None)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            slip = form.save()
+            audit(request, "payroll.payslip_created", slip)
+        messages.success(request, "Payslip draft created. Review it before publishing.")
+        return redirect("payslip_detail", payslip_id=slip.pk)
+    return render(request, "employees/payslip_form.html", {"form": form, "page_title": "Create payslip"})
+
+
+@login_required
+def payslip_edit(request, payslip_id):
+    if not is_payroll_or_admin(request.user):
+        raise PermissionDenied("Only payroll staff can edit payslips.")
+    slip = get_object_or_404(Payslip, pk=payslip_id)
+    if slip.published:
+        messages.error(request, "Published payslips are locked. Create a corrected draft instead.")
+        return redirect("payslip_detail", payslip_id=slip.pk)
+    form = PayslipForm(request.POST or None, request.FILES or None, instance=slip)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            slip = form.save()
+            audit(request, "payroll.payslip_updated", slip)
+        messages.success(request, "Payslip draft updated.")
+        return redirect("payslip_detail", payslip_id=slip.pk)
+    return render(request, "employees/payslip_form.html", {"form": form, "page_title": "Edit payslip", "payslip": slip})
