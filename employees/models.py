@@ -100,6 +100,7 @@ class Payslip(models.Model):
     def __str__(self): return f"{self.employee} — {self.period_start:%Y-%m}"
 
 class AuditLog(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name="audit_events")
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     action = models.CharField(max_length=100)
     object_type = models.CharField(max_length=100, blank=True)
