@@ -2,7 +2,7 @@ from datetime import date
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
 from django.urls import reverse
-from .models import Attendance, Employee, Payslip
+from .models import Attendance, AuditLog, Employee, LeaveRequest, Payslip
 
 
 class AccessControlTests(TestCase):
@@ -169,3 +169,79 @@ class AccessControlTests(TestCase):
             self.client.get(reverse("payslip_detail", args=[slip.pk])).status_code,
             403,
         )
+
+    def test_employee_leave_list_contains_only_own_requests(self):
+        LeaveRequest.objects.create(
+            employee=self.employee, start_date=date(2026, 11, 2),
+            end_date=date(2026, 11, 3), reason="Personal",
+        )
+        LeaveRequest.objects.create(
+            employee=self.other, start_date=date(2026, 11, 4),
+            end_date=date(2026, 11, 5), reason="Other employee",
+        )
+        self.client.login(username="employee", password="test-password-123")
+        response = self.client.get(reverse("leave_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Personal")
+        self.assertNotContains(response, "Other employee")
+
+    def test_employee_payslip_list_shows_only_own_published_slips(self):
+        own_slip = Payslip.objects.create(
+            employee=self.employee, period_start=date(2026, 1, 1),
+            period_end=date(2026, 1, 31), basic_pay=1000, published=True,
+        )
+        Payslip.objects.create(
+            employee=self.other, period_start=date(2026, 1, 1),
+            period_end=date(2026, 1, 31), basic_pay=2000, published=True,
+        )
+        self.client.login(username="employee", password="test-password-123")
+        response = self.client.get(reverse("payslip_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, str(own_slip.employee.full_name))
+        self.assertNotContains(response, str(self.other.full_name))
+
+    def test_employee_cannot_open_or_download_another_employees_payslip(self):
+        slip = Payslip.objects.create(
+            employee=self.other, period_start=date(2026, 2, 1),
+            period_end=date(2026, 2, 28), basic_pay=2000, published=True,
+        )
+        self.client.login(username="employee", password="test-password-123")
+        self.assertEqual(
+            self.client.get(reverse("payslip_detail", args=[slip.pk])).status_code,
+            403,
+        )
+        self.assertEqual(
+            self.client.get(reverse("payslip_document", args=[slip.pk])).status_code,
+            403,
+        )
+
+    def test_employee_audit_history_is_limited_to_their_employee_profile(self):
+        AuditLog.objects.create(
+            employee=self.employee, actor=self.employee_user,
+            action="own.activity", object_type="Attendance", object_id="1",
+        )
+        AuditLog.objects.create(
+            employee=self.other, actor=self.other_user,
+            action="other.secret_activity", object_type="Payslip", object_id="2",
+        )
+        self.client.login(username="employee", password="test-password-123")
+        response = self.client.get(reverse("audit_history"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "own.activity")
+        self.assertNotContains(response, "other.secret_activity")
+
+    def test_hr_audit_history_can_view_org_wide_events(self):
+        AuditLog.objects.create(
+            employee=self.employee, actor=self.employee_user,
+            action="employee.activity", object_type="Attendance", object_id="1",
+        )
+        AuditLog.objects.create(
+            employee=self.other, actor=self.other_user,
+            action="other.activity", object_type="Payslip", object_id="2",
+        )
+        self.client.login(username="hr", password="test-password-123")
+        response = self.client.get(reverse("audit_history"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "employee.activity")
+        self.assertContains(response, "other.activity")
+
