@@ -1,41 +1,38 @@
 # AeroPeople — Employee Management Portal
 
-Django-based employee self-service and HR workflow learning prototype.
+Django-based employee self-service and HR workflow prototype.
 
-## Modules in this branch
+## Current modules
 
-- Login-protected dashboard and employee account linking
-- Employee directory restricted to HR and superusers
-- Employee profiles with owner-only access unless HR/admin
-- Attendance clock-in/out and personal history
-- Leave requests, reviewer decisions, and leave balances
-- Payslip records, employee access to published payslips, payroll publishing
-- Audit entries for key portal actions
-- CSRF-protected forms and responsive HTML templates
-- Django admin interface intended for superuser-only access
+- Individual sign-in using Django authentication and password hashing.
+- HR/admin employee account creation that links a login to an employee profile.
+- Role-aware employee directory and profile access.
+- Employee attendance: Present/Clock In and Clock Out; server-recorded timestamps in Asia/Kolkata; personal history.
+- HR/admin attendance report with employee and date filters.
+- Leave requests, leave balance display, approvals, and manager direct-report scoping.
+- Published payslips for employees and payroll access for authorized staff.
+- Audit entries for important attendance, leave, account creation, and payroll actions.
+- CSRF-protected forms and responsive templates.
 
-## Role setup
+## Roles
 
-Create Django Groups named exactly Employee, Manager, HR, and Payroll and assign users through the admin. Superusers have full portal access. Employee accounts must be explicitly linked to the matching Employee row.
+Create Django groups named exactly `Employee`, `Manager`, `HR`, and `Payroll`. The employee creation form assigns the Employee group automatically. HR/admin access is limited by server-side permission checks. An administrator account is not automatically an employee; to clock in, a user must be linked to an active Employee record.
 
-- Employee: own profile, attendance, leave, published payslips.
-- Manager: leave review permission in this prototype. Team-only scoping is not yet implemented; review access is organization-wide, so do not use with real employee records.
-- HR: employee directory/profiles and leave review.
-- Payroll: payslip listing and publishing.
-- Superuser: full administrative access and account linking.
+## Windows setup / update
 
-## Setup (Windows)
+Back up `db.sqlite3` before updating. Do not delete the database.
 
-Back up your local db.sqlite3 first. This branch adds a migration and does not ask you to delete the database.
+```cmd
+.venv\Scripts\activate
+git pull origin feature/complete-hrms
+python manage.py migrate
+python manage.py check
+python manage.py test
+python manage.py runserver
+```
 
-    .venv\\Scripts\\activate
-    python manage.py migrate
-    python manage.py check
-    python manage.py test
-    python manage.py runserver
+Open http://127.0.0.1:8000/accounts/login/ and sign in. Superusers can create employee accounts at `/employees/create/`; HR users with the HR group can also use this route. The form creates a Django login, hashes the password through Django's standard password system, links the user to the Employee record, and assigns the Employee group. Share initial passwords privately and encourage employees to change them after first sign-in.
 
-If cloning without a virtual environment, create one and install Django 6.1.2 first. Open http://127.0.0.1:8000/ and sign in. Use /admin/ to create groups, accounts, employee records, leave balances and payslips. Assign the correct user link on each Employee record.
+## Important limitations
 
-## Prototype limitations
-
-This is not a production HR/payroll system. Before real use, implement manager/team scoping, robust leave balance handling for overlapping requests and partial days, attendance policies and anti-tampering controls, complete audit coverage, deployment secrets/security, backups, and automated end-to-end tests. Payroll amounts are stored but Indian statutory tax/EPF/ESI calculations are not implemented. SQLite and Django's development server are for local development only. Use fictional data while learning.
+This is still a local learning prototype, not a production-ready HR/payroll system. Do not use real sensitive employee/payroll data or expose the development server publicly. Before production use, configure environment-based secrets, DEBUG=False, secure HTTPS/session settings, database backups, password reset and first-login password-change workflow, complete audit coverage, attendance correction/approval policy, and formal security review. SQLite and Django's development server are intended for local development. Payroll records do not implement Indian statutory tax, EPF, or ESI calculations.
