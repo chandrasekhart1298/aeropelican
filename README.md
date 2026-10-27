@@ -1,6 +1,6 @@
-# AeroPeople — HRMS Prototype
+# Aeropelican Tech — HRMS
 
-AeroPeople is a Django-based employee services and HR workflow prototype. It includes employee account/profile management, attendance, leave requests and approvals, payslip visibility, role-based access controls, and read-only audit history.
+Aeropelican Tech is a Django-based employee services and HR workflow prototype. It includes employee account/profile management, attendance, leave requests and approvals, payslip visibility, role-based access controls, and read-only audit history.
 
 > **Status:** development prototype. It is not production-ready. Do not store real employee, identity, banking, or payroll data in an exposed deployment.
 
@@ -48,9 +48,9 @@ If your local branch has uncommitted changes, inspect and back them up before sw
 ### Fresh setup
 
 ```bash
-git clone https://github.com/chandrasekhart1298/aeropelican.git
-cd aeropelican
-git switch feature/complete-hrms
+git clone https://github.com/chandrasekhart1298/aeropelicantech.git
+cd aeropelicantech
+git switch feature/hrms-improvements
 python -m venv .venv
 source .venv/Scripts/activate
 python -m pip install -r requirements.txt
