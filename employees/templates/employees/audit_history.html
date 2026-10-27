@@ -3,7 +3,7 @@
 {% block content %}
 <p class="muted">SECURITY & COMPLIANCE</p>
 <h1>Audit history</h1>
-<p class="muted">Read-only activity history for HR and system administrators.</p>
+<p class="muted">{% if is_privileged %}Organization-wide read-only activity history.{% else %}Your personal activity history only. Other employees’ records are not shown.{% endif %}</p>
 <section class="panel">
   <form method="get" class="actions">
     <input type="search" name="q" value="{{ query }}" placeholder="Search action, actor or record ID" style="max-width:380px">
@@ -14,11 +14,11 @@
     <button type="submit">Filter</button>
   </form>
   <div class="table-wrap"><table>
-    <thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Record type</th><th>Record ID</th><th>IP address</th></tr></thead>
+    <thead><tr><th>Time</th>{% if is_privileged %}<th>Employee</th><th>Actor</th>{% endif %}<th>Action</th><th>Record type</th><th>Record ID</th>{% if is_privileged %}<th>IP address</th>{% endif %}</tr></thead>
     <tbody>
       {% for entry in page_obj %}
-      <tr><td>{{ entry.created_at|date:"Y-m-d H:i:s" }}</td><td>{% if entry.actor %}{{ entry.actor.username }}{% else %}System / deleted user{% endif %}</td><td>{{ entry.action }}</td><td>{{ entry.object_type|default:"—" }}</td><td>{{ entry.object_id|default:"—" }}</td><td>{{ entry.ip_address|default:"—" }}</td></tr>
-      {% empty %}<tr><td colspan="6">No audit events found.</td></tr>{% endfor %}
+      <tr><td>{{ entry.created_at|date:"Y-m-d H:i:s" }}</td>{% if is_privileged %}<td>{{ entry.employee.full_name|default:"—" }}</td><td>{% if entry.actor %}{{ entry.actor.username }}{% else %}System / deleted user{% endif %}</td>{% endif %}<td>{{ entry.action }}</td><td>{{ entry.object_type|default:"—" }}</td><td>{{ entry.object_id|default:"—" }}</td>{% if is_privileged %}<td>{{ entry.ip_address|default:"—" }}</td>{% endif %}</tr>
+      {% empty %}<tr><td colspan="{% if is_privileged %}7{% else %}4{% endif %}">No audit events found.</td></tr>{% endfor %}
     </tbody>
   </table></div>
   <div class="actions">

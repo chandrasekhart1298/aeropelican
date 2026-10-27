@@ -172,3 +172,35 @@ class LeaveRequestForm(forms.ModelForm):
         if start and start < timezone.localdate():
             self.add_error("start_date", "Start date cannot be in the past.")
         return data
+
+
+class PayslipForm(forms.ModelForm):
+    class Meta:
+        from .models import Payslip
+        model = Payslip
+        fields = ("employee", "period_start", "period_end", "currency", "basic_pay", "allowances", "deductions", "document", "notes")
+        widgets = {
+            "period_start": forms.DateInput(attrs={"type": "date"}),
+            "period_end": forms.DateInput(attrs={"type": "date"}),
+            "notes": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["employee"].queryset = Employee.objects.filter(is_active=True).order_by("full_name")
+        self.fields["document"].help_text = "Optional PDF or image, maximum 5 MB."
+
+    def clean(self):
+        cleaned = super().clean()
+        start, end = cleaned.get("period_start"), cleaned.get("period_end")
+        if start and end and end < start:
+            self.add_error("period_end", "Pay period end must be on or after the start date.")
+        upload = cleaned.get("document")
+        if upload and not isinstance(upload, str):
+            allowed = {".pdf", ".png", ".jpg", ".jpeg"}
+            import os
+            if os.path.splitext(upload.name)[1].lower() not in allowed:
+                self.add_error("document", "Upload a PDF, PNG, or JPEG file.")
+            if upload.size > 5 * 1024 * 1024:
+                self.add_error("document", "File must be 5 MB or smaller.")
+        return cleaned

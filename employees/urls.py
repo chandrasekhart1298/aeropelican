@@ -16,6 +16,9 @@ urlpatterns = [
     path("leave/apply/", views.leave_apply, name="leave_apply"),
     path("leave/<int:leave_id>/<str:decision>/", views.leave_review, name="leave_review"),
     path("payroll/payslips/", views.payslip_list, name="payslip_list"),
+    path("payroll/payslips/create/", views.payslip_create, name="payslip_create"),
+    path("payroll/payslips/<int:payslip_id>/edit/", views.payslip_edit, name="payslip_edit"),
+    path("payroll/payslips/<int:payslip_id>/document/", views.payslip_document, name="payslip_document"),
     path("payroll/payslips/<int:payslip_id>/", views.payslip_detail, name="payslip_detail"),
     path("payroll/payslips/<int:payslip_id>/publish/", views.payslip_publish, name="payslip_publish"),
 ]

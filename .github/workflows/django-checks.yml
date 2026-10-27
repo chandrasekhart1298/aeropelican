@@ -2,7 +2,7 @@ name: Django checks
 
 on:
   push:
-    branches: [master, feature/complete-hrms]
+    branches: [master, feature/complete-hrms, feature/hrms-improvements]
   pull_request:
     branches: [master]
 
