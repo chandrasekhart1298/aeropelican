@@ -1,6 +1,6 @@
-# AeroPeople — HRMS Prototype
+# Aeropelican Tech — HRMS
 
-AeroPeople is a Django-based employee services and HR workflow prototype. It includes employee account/profile management, attendance, leave requests and approvals, payslip visibility, role-based access controls, and read-only audit history.
+Aeropelican Tech is a Django-based employee services and HR workflow prototype. It includes employee account/profile management, attendance, leave requests and approvals, payslip visibility, role-based access controls, and read-only audit history.
 
 > **Status:** development prototype. It is not production-ready. Do not store real employee, identity, banking, or payroll data in an exposed deployment.
 
@@ -33,7 +33,7 @@ Open Git Bash or a terminal in the project directory. Back up `db.sqlite3` befor
 
 ```bash
 git status --short
-git switch feature/complete-hrms
+git switch feature/hrms-improvements
 git pull --ff-only origin feature/complete-hrms
 source .venv/Scripts/activate
 python -m pip install -r requirements.txt
@@ -48,9 +48,9 @@ If your local branch has uncommitted changes, inspect and back them up before sw
 ### Fresh setup
 
 ```bash
-git clone https://github.com/chandrasekhart1298/aeropelican.git
-cd aeropelican
-git switch feature/complete-hrms
+git clone https://github.com/chandrasekhart1298/aeropelicantech.git
+cd aeropelicantech
+git switch feature/hrms-improvements
 python -m venv .venv
 source .venv/Scripts/activate
 python -m pip install -r requirements.txt
@@ -77,7 +77,7 @@ Open http://127.0.0.1:8000/accounts/login/ and sign in with the superuser accoun
 
 ## Git workflow
 
-Work on `feature/complete-hrms` until CI and local checks pass. Review the pull request into `master` before merging; do not push directly to `master` merely to synchronize branches. After an approved merge, update local `master` with a fast-forward pull. Never force-push shared branches to resolve divergence.
+Work on `feature/hrms-improvements` until CI and local checks pass. Review the pull request into `master` before merging; do not push directly to `master` merely to synchronize branches. After an approved merge, update local `master` with a fast-forward pull. Never force-push shared branches to resolve divergence.
 
 ## Production readiness checklist
 
