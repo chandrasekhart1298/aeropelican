@@ -1,6 +1,33 @@
-{% extends "employees/base.html" %}{% block title %}Dashboard | AeroPeople{% endblock %}{% block content %}
-<p class="muted">EMPLOYEE SERVICES</p><h1>Welcome{% if employee %}, {{ employee.full_name }}{% else %}, {{ request.user.get_username }}{% endif %}</h1><p class="muted">Your workspace for employee services and requests.</p>
-{% if can_manage_employee_accounts %}<section class="panel"><h2>People operations control center</h2><p class="muted">Manage employee profiles, account access and employment status.</p><div class="actions"><a class="btn" href="{% url 'employee_create' %}">Create user login</a><a class="btn secondary" href="{% url 'employee_directory' %}">Manage employees and accounts</a>{% if request.user.is_superuser %}<a class="btn secondary" href="/admin/">System administration</a>{% endif %}</div></section>{% endif %}
-{% if total_employees != None %}<section class="grid"><div class="stat"><span class="muted">Active employees</span><strong>{{ total_employees }}</strong></div><div class="stat"><span class="muted">Pending leave requests</span><strong>{{ pending_leave_count }}</strong></div></section>{% endif %}
-<section class="grid"><div class="panel"><h2>Attendance</h2><p class="muted">Record today's working time and review your attendance history.</p><a class="btn" href="{% url 'attendance' %}">Open attendance</a></div><div class="panel"><h2>Leave management</h2><p class="muted">Submit leave requests and follow their status.</p><a class="btn" href="{% url 'leave_list' %}">View leave</a></div><div class="panel"><h2>Payslips</h2><p class="muted">Access published payslips securely.</p><a class="btn" href="{% url 'payslip_list' %}">View payslips</a></div>{% if can_view_directory %}<div class="panel"><h2>Employee directory</h2><p class="muted">Search employee profiles.</p><a class="btn" href="{% url 'employee_directory' %}">Open directory</a></div>{% endif %}{% if can_review_leave %}<div class="panel"><h2>Leave approvals</h2><p class="muted">Review requests within your authorized role.</p><a class="btn" href="{% url 'leave_list' %}">Review requests</a></div>{% endif %}{% if can_manage_payroll %}<div class="panel"><h2>Payroll operations</h2><p class="muted">Manage and publish payslips.</p><a class="btn" href="{% url 'payslip_list' %}">Open payroll</a></div>{% endif %}</section>
-{% if not employee %}<div class="notice">Your login is not linked to an employee profile. Ask the administrator to link your account before using employee self-service.</div>{% endif %}{% endblock %}
+{% extends "employees/base.html" %}
+{% block title %}Dashboard | Aeropelican Tech{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">PEOPLE OPERATIONS</p><h1>Welcome{% if employee %}, {{ employee.full_name }}{% else %}, {{ request.user.get_username }}{% endif %}</h1><p class="muted">Your Aeropelican Tech workspace — people, attendance, leave and payroll in one place.</p></div>
+  {% if can_manage_employee_accounts %}<a class="btn" href="{% url 'employee_create' %}">＋ Add employee</a>{% endif %}
+</div>
+
+{% if can_manage_employee_accounts %}
+<section class="panel">
+  <div class="section-heading"><div><h2>People operations</h2><p class="muted">Manage employee profiles, account access and employment status.</p></div><span class="badge">HR workspace</span></div>
+  <div class="actions"><a class="btn" href="{% url 'employee_create' %}">Create employee login</a><a class="btn secondary" href="{% url 'employee_directory' %}">Employee directory</a>{% if request.user.is_superuser %}<a class="btn secondary" href="/admin/">System administration</a>{% endif %}</div>
+</section>
+{% endif %}
+
+{% if total_employees != None %}
+<section class="grid dashboard-stats">
+  <div class="stat"><span class="stat-icon">♙</span><span class="muted">Active employees</span><strong>{{ total_employees }}</strong><span class="muted">People in the organization</span></div>
+  <div class="stat"><span class="stat-icon">◷</span><span class="muted">Pending leave requests</span><strong>{{ pending_leave_count }}</strong><span class="muted">Awaiting review</span></div>
+</section>
+{% endif %}
+
+<div class="section-heading"><div><h2>Employee services</h2><p class="muted">Quick access to your everyday tools.</p></div></div>
+<section class="grid service-grid">
+  <article class="panel service-card"><span class="service-icon">◷</span><h2>Attendance</h2><p class="muted">Record today's working time and review your attendance history.</p><a class="btn" href="{% url 'attendance' %}">Open attendance →</a></article>
+  <article class="panel service-card"><span class="service-icon">▣</span><h2>Leave management</h2><p class="muted">Apply for leave, check balances and follow request decisions.</p><a class="btn" href="{% url 'leave_list' %}">{% if can_review_leave %}Review requests{% else %}View my leave{% endif %} →</a></article>
+  <article class="panel service-card"><span class="service-icon">₹</span><h2>Payroll &amp; payslips</h2><p class="muted">Access published payslips{% if can_manage_payroll %} and manage payroll records{% endif %}.</p><a class="btn" href="{% url 'payslip_list' %}">{% if can_manage_payroll %}Open payroll{% else %}View payslips{% endif %} →</a></article>
+  {% if can_view_directory %}<article class="panel service-card"><span class="service-icon">♙</span><h2>Employee directory</h2><p class="muted">Find employee profiles and work information.</p><a class="btn" href="{% url 'employee_directory' %}">Browse employees →</a></article>{% endif %}
+  {% if request.user.is_superuser %}<article class="panel service-card"><span class="service-icon">⚙</span><h2>Admin control center</h2><p class="muted">Access the Django administration interface.</p><a class="btn secondary" href="/admin/">Open admin →</a></article>{% endif %}
+</section>
+{% if not employee %}<div class="notice">Your login is not linked to an employee profile. Please ask an administrator to link your account before using employee self-service.</div>{% endif %}
+{% endblock %}
