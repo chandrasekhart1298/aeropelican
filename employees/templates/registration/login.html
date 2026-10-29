@@ -1,1 +1,94 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign in | AeroPeople</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f1f5f9;font:16px Segoe UI,Arial;color:#1e293b}.card{width:min(92%,420px);padding:34px;background:white;border-radius:16px;box-shadow:0 10px 40px #0f172a14}h1{text-align:center;color:#17365d;margin:0}.sub{text-align:center;color:#64748b;margin:8px 0 26px}label{display:block;font-weight:600;margin:14px 0 6px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}button{margin-top:20px;width:100%;padding:12px;border:0;border-radius:8px;background:#2459a9;color:white;font:inherit;cursor:pointer}.error{color:#b91c1c}</style></head><body><main class="card"><h1>AeroPeople</h1><p class="sub">Sign in to your employee portal</p>{% if form.errors %}<p class="error">Invalid username or password. Please try again.</p>{% endif %}<form method="post">{% csrf_token %}<input type="hidden" name="next" value="{{ next }}"><label for="id_username">Username</label><input name="username" id="id_username" autocomplete="username" required autofocus><label for="id_password">Password</label><input type="password" name="password" id="id_password" autocomplete="current-password" required><button type="submit">Sign in</button></form></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101a32">
+  <title>Sign in | Aeropelican Tech</title>
+  <style>
+    :root{color-scheme:light;--ink:#17233b;--muted:#71809a;--line:#e3e9f3;--brand:#4f63e8;--navy:#101a32;--surface:#fff;--page:#f4f6fb}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:var(--page);color:var(--ink);font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr)}
+    .welcome{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;padding:clamp(30px,5vw,72px);color:white;background:radial-gradient(ellipse at 10% 10%,#354a8a 0,transparent 40%),linear-gradient(145deg,#101a32,#1a2a4e 65%,#263b70)}
+    .welcome:before,.welcome:after{content:"";position:absolute;border:1px solid #ffffff14;border-radius:50%;width:480px;height:480px;right:-170px;bottom:-180px}
+    .welcome:after{width:330px;height:330px;right:-95px;bottom:-105px}
+    .brand{position:relative;z-index:1;display:flex;align-items:center;gap:13px;color:white;text-decoration:none}
+    .brand-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:linear-gradient(140deg,#91a0ff,#5368ec);font-size:20px;font-weight:900;box-shadow:0 10px 28px #050b1f45}
+    .brand-name{font-weight:800;font-size:17px;letter-spacing:-.3px;line-height:1.2}.brand-sub{display:block;margin-top:5px;font-size:10px;font-weight:700;letter-spacing:1.8px;color:#b9c6f5}
+    .hero{position:relative;z-index:1;max-width:580px;margin:55px 0}
+    .eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:#aebdff}
+    h1{font-size:clamp(34px,4vw,56px);line-height:1.08;letter-spacing:-2px;margin:18px 0}
+    .hero p{font-size:16px;line-height:1.8;color:#c3cde3;max-width:460px}
+    .feature-list{display:grid;gap:15px;margin-top:34px}
+    .feature{display:flex;gap:12px;align-items:center;color:#e4eaff;font-size:13px}
+    .feature-icon{display:grid;place-items:center;width:30px;height:30px;border:1px solid #ffffff25;background:#ffffff0c;border-radius:9px;color:#b9c6ff;font-weight:800}
+    .welcome-footer{position:relative;z-index:1;color:#93a2c2;font-size:11px}
+    .login-area{display:grid;place-items:center;padding:36px 24px;background:linear-gradient(160deg,#f7f8fc,#edf1f9)}
+    .login-card{width:min(100%,420px);padding:clamp(26px,4vw,42px);background:var(--surface);border:1px solid #e7ebf4;border-radius:22px;box-shadow:0 24px 70px #1c2c5012}
+    .mobile-brand{display:none}
+    .form-eyebrow{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;font-weight:800;color:var(--brand)}
+    h2{font-size:29px;letter-spacing:-1px;margin:8px 0 5px}.sub{margin:0 0 28px;color:var(--muted);font-size:13px}
+    .alert{padding:12px 13px;border-radius:10px;background:#fff0f0;border:1px solid #ffd8d8;color:#a32323;margin:0 0 17px;font-size:12px}
+    .field{margin:17px 0}.field label{display:block;margin-bottom:7px;font-weight:750;font-size:12px}
+    .input-wrap{position:relative}.input-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#8490a6;font-size:15px;pointer-events:none}
+    input{width:100%;height:48px;padding:0 13px 0 40px;border:1px solid var(--line);border-radius:11px;background:#fbfcff;color:var(--ink);font:inherit;outline:none;transition:border .15s,box-shadow .15s}
+    input:focus{border-color:#7f90ff;box-shadow:0 0 0 4px #6377f21a}
+    .submit{display:flex;justify-content:center;align-items:center;width:100%;height:48px;margin-top:24px;border:0;border-radius:11px;background:linear-gradient(100deg,#5268eb,#4055d4);color:white;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 9px 18px #4b60df2b;transition:transform .15s,box-shadow .15s}
+    .submit:hover{transform:translateY(-1px);box-shadow:0 12px 24px #4b60df38}.submit:focus-visible{outline:3px solid #8796ff;outline-offset:3px}
+    .secure-note{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;color:var(--muted);font-size:11px}.secure-dot{width:7px;height:7px;background:#16a37b;border-radius:50%}
+    .help{margin-top:23px;padding-top:20px;border-top:1px solid #edf0f6;text-align:center;color:var(--muted);font-size:11px;line-height:1.7}
+    @media(max-width:850px){body{grid-template-columns:1fr}.welcome{display:none}.login-area{min-height:100vh;padding:22px}.mobile-brand{display:flex;align-items:center;gap:10px;margin-bottom:26px}.mobile-brand .brand-mark{width:38px;height:38px;border-radius:11px;font-size:16px}.mobile-brand .brand-name{font-size:14px}.mobile-brand .brand-sub{font-size:9px}.login-card{box-shadow:0 18px 50px #1c2c5010}}
+    @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <section class="welcome" aria-label="Aeropelican Tech introduction">
+    <a class="brand" href="#" aria-label="Aeropelican Tech">
+      <span class="brand-mark">A</span>
+      <span class="brand-name">Aeropelican Tech<span class="brand-sub">PEOPLE OPERATIONS</span></span>
+    </a>
+    <div class="hero">
+      <div class="eyebrow">People. Progress. Possibility.</div>
+      <h1>A better workday starts here.</h1>
+      <p>Your people workspace for employee services, attendance, leave and payroll — thoughtfully brought together in one secure portal.</p>
+      <div class="feature-list">
+        <div class="feature"><span class="feature-icon">✓</span><span>One place for everyday employee services</span></div>
+        <div class="feature"><span class="feature-icon">◷</span><span>Attendance and leave at a glance</span></div>
+        <div class="feature"><span class="feature-icon">▤</span><span>Private access to your published payslips</span></div>
+      </div>
+    </div>
+    <div class="welcome-footer">© {% now "Y" %} Aeropelican Tech · Internal employee workspace</div>
+  </section>
+
+  <main class="login-area">
+    <div style="width:min(100%,420px)">
+      <div class="mobile-brand">
+        <span class="brand-mark">A</span>
+        <span class="brand-name">Aeropelican Tech<span class="brand-sub">PEOPLE OPERATIONS</span></span>
+      </div>
+      <section class="login-card" aria-labelledby="login-title">
+        <div class="form-eyebrow">Employee portal</div>
+        <h2 id="login-title">Welcome back</h2>
+        <p class="sub">Sign in with your company account to continue.</p>
+        {% if form.errors %}<div class="alert" role="alert">We couldn't sign you in with those details. Check your username and password, then try again.</div>{% endif %}
+        {% if next and user.is_authenticated %}<div class="alert" role="status">Your account doesn't have permission to access that page. Sign in with an authorized account.</div>{% endif %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next }}">
+          <div class="field">
+            <label for="id_username">Username</label>
+            <div class="input-wrap"><span class="input-icon" aria-hidden="true">♙</span><input name="username" id="id_username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus placeholder="Enter your username" value="{{ form.username.value|default:'' }}"></div>
+          </div>
+          <div class="field">
+            <label for="id_password">Password</label>
+            <div class="input-wrap"><span class="input-icon" aria-hidden="true">▣</span><input type="password" name="password" id="id_password" autocomplete="current-password" required placeholder="Enter your password"></div>
+          </div>
+          <button class="submit" type="submit">Sign in securely <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="secure-note"><span class="secure-dot"></span>Use your authorized company credentials</div>
+        <div class="help">Need access or can't sign in?<br>Contact your Aeropelican Tech HR or system administrator.</div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
