@@ -246,3 +246,46 @@ class AccessControlTests(TestCase):
         self.assertContains(response, "employee.activity")
         self.assertContains(response, "other.activity")
 
+    def test_manager_leave_list_is_limited_to_direct_reports(self):
+        manager_user = User.objects.create_user(
+            username="manager", password="test-password-123"
+        )
+        manager_group, _ = Group.objects.get_or_create(name="Manager")
+        manager_user.groups.add(manager_group)
+        manager_employee = Employee.objects.create(
+            user=manager_user, employee_id="M001",
+            full_name="Test Manager", work_email="manager@example.test",
+            department="Engineering", job_title="Manager",
+            joining_date=date(2024, 1, 1),
+        )
+        self.employee.manager = manager_employee
+        self.employee.save(update_fields=["manager"])
+        LeaveRequest.objects.create(
+            employee=self.employee, start_date=date(2026, 11, 2),
+            end_date=date(2026, 11, 3), reason="Direct report leave",
+        )
+        LeaveRequest.objects.create(
+            employee=self.other, start_date=date(2026, 11, 4),
+            end_date=date(2026, 11, 5), reason="Unrelated leave",
+        )
+        self.client.login(username="manager", password="test-password-123")
+        response = self.client.get(reverse("leave_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Direct report leave")
+        self.assertNotContains(response, "Unrelated leave")
+
+    def test_manager_without_linked_employee_sees_no_leave_requests(self):
+        manager_user = User.objects.create_user(
+            username="manager_unlinked", password="test-password-123"
+        )
+        manager_group, _ = Group.objects.get_or_create(name="Manager")
+        manager_user.groups.add(manager_group)
+        LeaveRequest.objects.create(
+            employee=self.employee, start_date=date(2026, 11, 2),
+            end_date=date(2026, 11, 3), reason="Private leave request",
+        )
+        self.client.login(username="manager_unlinked", password="test-password-123")
+        response = self.client.get(reverse("leave_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Private leave request")
+
