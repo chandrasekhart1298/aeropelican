@@ -1,1 +1,27 @@
-{% extends "employees/base.html" %}{% block title %}Payslips | AeroPeople{% endblock %}{% block content %}<h1>{% if can_manage_payroll %}Payroll and payslips{% else %}My payslips{% endif %}</h1><p class="muted">Only published payslips are visible to employees.</p>{% if can_manage_payroll %}<div class="actions"><a class="btn" href="{% url 'payslip_create' %}">Create payslip</a></div>{% endif %}<section class="panel"><div class="table-wrap"><table><thead><tr>{% if can_manage_payroll %}<th>Employee</th>{% endif %}<th>Pay period</th><th>Gross pay</th><th>Deductions</th><th>Net pay</th><th>Status</th><th>Details</th>{% if can_manage_payroll %}<th>Publish</th>{% endif %}</tr></thead><tbody>{% for slip in payslips %}<tr>{% if can_manage_payroll %}<td>{{ slip.employee.full_name }}</td>{% endif %}<td>{{ slip.period_start }} – {{ slip.period_end }}</td><td>{{ slip.currency }} {{ slip.gross_pay|floatformat:2 }}</td><td>{{ slip.currency }} {{ slip.deductions|floatformat:2 }}</td><td>{{ slip.currency }} {{ slip.net_pay|floatformat:2 }}</td><td>{% if slip.published %}Published{% else %}Draft{% endif %}</td><td><a href="{% url 'payslip_detail' slip.id %}">Open</a>{% if can_manage_payroll and not slip.published %} · <a href="{% url 'payslip_edit' slip.id %}">Edit</a>{% endif %}</td>{% if can_manage_payroll %}<td>{% if not slip.published %}<form method="post" action="{% url 'payslip_publish' slip.id %}">{% csrf_token %}<button>Publish</button></form>{% else %}—{% endif %}</td>{% endif %}</tr>{% empty %}<tr><td colspan="8">No payslips available.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "employees/base.html" %}
+{% block title %}Payroll & payslips | Aeropelican Tech{% endblock %}
+{% block page_title %}{% if can_manage_payroll %}Payroll & payslips{% else %}My payslips{% endif %}{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><div class="eyebrow">Compensation</div><h1>{% if can_manage_payroll %}Payroll & payslips{% else %}My payslips{% endif %}</h1><p class="muted">{% if can_manage_payroll %}Prepare, review and publish employee payslips.{% else %}Access your published pay statements and payment-period details.{% endif %}</p></div>
+  {% if can_manage_payroll %}<a class="btn" href="{% url 'payslip_create' %}">＋ Create payslip</a>{% endif %}
+</div>
+<section class="grid dashboard-stats">
+  <div class="stat"><div class="stat-icon">₹</div><span class="stat-label">Payslip access</span><strong>{% if can_manage_payroll %}Payroll{% else %}Personal{% endif %}</strong><span class="muted">{% if can_manage_payroll %}Authorized payroll workspace{% else %}Your published records only{% endif %}</span></div>
+  <div class="stat"><div class="stat-icon">▤</div><span class="stat-label">Privacy</span><strong>Secure</strong><span class="muted">Payslip visibility is permission-controlled</span></div>
+  <div class="stat"><div class="stat-icon">✓</div><span class="stat-label">Publication</span><strong>Verified</strong><span class="muted">Only published statements are available to employees</span></div>
+</section>
+<section class="panel">
+  <div class="section-heading" style="margin-top:0"><div><h2>{% if can_manage_payroll %}Payslip register{% else %}Available payslips{% endif %}</h2><p class="muted">Review pay period, gross pay, deductions and net pay.</p></div></div>
+  <div class="table-wrap"><table><thead><tr>{% if can_manage_payroll %}<th>Employee</th>{% endif %}<th>Pay period</th><th>Gross pay</th><th>Deductions</th><th>Net pay</th><th>Status</th><th>Details</th>{% if can_manage_payroll %}<th>Publish</th>{% endif %}</tr></thead>
+  <tbody>{% for slip in payslips %}
+    <tr>{% if can_manage_payroll %}<td><strong>{{ slip.employee.full_name }}</strong><br><span class="muted">{{ slip.employee.employee_id }}</span></td>{% endif %}
+      <td>{{ slip.period_start }} – {{ slip.period_end }}</td><td>{{ slip.currency }} {{ slip.gross_pay|floatformat:2 }}</td><td>{{ slip.currency }} {{ slip.deductions|floatformat:2 }}</td><td><strong>{{ slip.currency }} {{ slip.net_pay|floatformat:2 }}</strong></td>
+      <td>{% if slip.published %}<span class="badge">Published</span>{% else %}<span class="badge" style="background:#fff6df;color:#8a5a00">Draft</span>{% endif %}</td>
+      <td><a href="{% url 'payslip_detail' slip.id %}">View details</a>{% if can_manage_payroll and not slip.published %}<br><a href="{% url 'payslip_edit' slip.id %}">Edit draft</a>{% endif %}</td>
+      {% if can_manage_payroll %}<td>{% if not slip.published %}<form method="post" action="{% url 'payslip_publish' slip.id %}">{% csrf_token %}<button type="submit">Publish</button></form>{% else %}<span class="muted">Published</span>{% endif %}</td>{% endif %}
+    </tr>
+  {% empty %}<tr><td colspan="{% if can_manage_payroll %}8{% else %}6{% endif %}" style="padding:34px;text-align:center"><strong>No payslips available</strong><br><span class="muted">Published payslips will appear here when available.</span></td></tr>{% endfor %}</tbody></table></div>
+  <p class="muted">Payroll figures should be reviewed by authorized payroll staff before publication. This portal does not independently certify statutory compliance.</p>
+</section>
+{% endblock %}
