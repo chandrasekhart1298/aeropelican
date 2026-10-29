@@ -1,1 +1,17 @@
-{% extends "employees/base.html" %}{% block title %}Apply for leave | AeroPeople{% endblock %}{% block content %}<h1>Apply for leave</h1><p class="muted">Submit your request for review.</p><section class="panel"><form method="post">{% csrf_token %}{{ form.non_field_errors }}{% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}<div class="actions"><button>Submit request</button><a class="btn secondary" href="{% url 'leave_list' %}">Cancel</a></div></form></section>{% endblock %}
+{% extends "employees/base.html" %}
+{% block title %}Apply for leave | Aeropelican Tech{% endblock %}
+{% block page_title %}Apply for leave{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">Employee services</div><h1>Request time off</h1><p class="muted">Provide your leave dates and a reason. Your request will be sent to the appropriate reviewer.</p></div><a class="btn secondary" href="{% url 'leave_list' %}">← Leave management</a></div>
+<section class="panel">
+  <div class="section-heading" style="margin-top:0"><div><h2>Leave request details</h2><p class="muted">Please check the dates before submitting.</p></div></div>
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="notice error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}
+      <div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span aria-hidden="true">*</span>{% endif %}</label>{{ field }}{% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}{% if field.errors %}<div class="errorlist" role="alert">{{ field.errors }}</div>{% endif %}</div>
+    {% endfor %}
+    <div class="actions"><button type="submit">Submit leave request</button><a class="btn secondary" href="{% url 'leave_list' %}">Cancel</a></div>
+  </form>
+</section>
+{% endblock %}
