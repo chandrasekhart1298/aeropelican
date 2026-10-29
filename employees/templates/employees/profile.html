@@ -1,7 +1,22 @@
 {% extends "employees/base.html" %}
-{% block title %}{{ employee.full_name }} | AeroPeople{% endblock %}
+{% block title %}{{ employee.full_name }} | Aeropelican Tech{% endblock %}
+{% block page_title %}Employee profile{% endblock %}
 {% block content %}
-<p class="muted">EMPLOYEE PROFILE</p><h1>{{ employee.full_name }}</h1><p class="muted">{{ employee.job_title }} · {{ employee.department }}</p>
-<section class="panel"><div class="detail">
-<div><small>Employee ID</small><strong>{{ employee.employee_id }}</strong></div><div><small>Work email</small><strong>{{ employee.work_email }}</strong></div><div><small>Department</small><strong>{{ employee.department }}</strong></div><div><small>Job title</small><strong>{{ employee.job_title }}</strong></div><div><small>Joining date</small><strong>{{ employee.joining_date }}</strong></div><div><small>Manager</small><strong>{{ employee.manager.full_name|default:"Not assigned" }}</strong></div><div><small>Portal username</small><strong>{{ employee.user.username|default:"Not linked" }}</strong></div><div><small>Login status</small><strong>{% if employee.user and employee.user.is_active %}Enabled{% else %}Disabled / not linked{% endif %}</strong></div><div><small>Employment status</small><strong>{% if employee.is_active %}Active{% else %}Inactive{% endif %}</strong></div>
-</div><div class="actions"><a class="btn" href="{% url 'employee_manage' employee.pk %}">Edit employee / manage account</a><a class="btn secondary" href="{% url 'employee_directory' %}">Back to directory</a></div></section>{% endblock %}
+<div class="page-heading">
+  <div><div class="eyebrow">People directory / Profile</div><h1>{{ employee.full_name }}</h1><p class="muted">{{ employee.job_title }} · {{ employee.department }}</p></div>
+  {% if can_manage_employee_accounts %}<a class="btn" href="{% url 'employee_manage' employee.pk %}">Edit profile</a>{% endif %}
+</div>
+<section class="panel">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+    <div class="avatar" style="width:58px;height:58px;flex-basis:58px;font-size:20px;background:color-mix(in srgb,var(--brand) 16%,var(--surface));color:var(--brand)">{{ employee.full_name|first|upper }}</div>
+    <div><h2 style="margin:0 0 5px">{{ employee.full_name }}</h2><div class="muted">{{ employee.employee_id }} · {{ employee.department }}</div>{% if employee.is_active %}<span class="badge" style="margin-top:7px">Active employee</span>{% else %}<span class="badge" style="margin-top:7px;background:var(--surface-2);color:var(--muted)">Inactive employee</span>{% endif %}</div>
+  </div>
+  <div class="section-heading"><div><h2>Employment information</h2><p class="muted">Core work and reporting details.</p></div></div>
+  <div class="detail">
+    <div><small>Employee ID</small><strong>{{ employee.employee_id }}</strong></div><div><small>Work email</small><strong>{{ employee.work_email }}</strong></div><div><small>Department</small><strong>{{ employee.department }}</strong></div><div><small>Job title</small><strong>{{ employee.job_title }}</strong></div><div><small>Joining date</small><strong>{{ employee.joining_date }}</strong></div><div><small>Reporting manager</small><strong>{{ employee.manager.full_name|default:"Not assigned" }}</strong></div>
+  </div>
+  <div class="section-heading"><div><h2>Portal access</h2><p class="muted">Linked account status for authorized staff.</p></div></div>
+  <div class="detail"><div><small>Portal username</small><strong>{{ employee.user.username|default:"Not linked" }}</strong></div><div><small>Login status</small><strong>{% if employee.user and employee.user.is_active %}Enabled{% else %}Disabled / not linked{% endif %}</strong></div></div>
+  <div class="actions"><a class="btn secondary" href="{% url 'employee_directory' %}">← Back to directory</a>{% if can_manage_employee_accounts %}<a class="btn" href="{% url 'employee_manage' employee.pk %}">Manage employee</a>{% endif %}</div>
+</section>
+{% endblock %}
