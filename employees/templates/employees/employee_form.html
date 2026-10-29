@@ -1,22 +1,25 @@
 {% extends "employees/base.html" %}
-{% block title %}Create employee | AeroPeople{% endblock %}
+{% block title %}Create employee | Aeropelican Tech{% endblock %}
+{% block page_title %}Add employee{% endblock %}
 {% block content %}
-<p class="muted">HR / ADMINISTRATION</p>
-<h1>Create user login</h1>
-<p class="muted">Create login credentials and link them to an employee profile in one step. Only administrators can assign HR, Manager or Payroll access. Share the initial password securely; never send it in a public channel.</p>
+<div class="page-heading"><div><div class="eyebrow">People operations / Administration</div><h1>Create employee account</h1><p class="muted">Create portal access and link it to an employee profile in one workflow.</p></div><a class="btn secondary" href="{% url 'employee_directory' %}">← Employee directory</a></div>
+<div class="notice">Security tip: share initial credentials privately. Never send passwords in a public channel. Only authorized administrators can assign privileged roles.</div>
 <section class="panel">
+  <div class="section-heading" style="margin-top:0"><div><h2>Employee details and access</h2><p class="muted">Complete all required fields. Validation errors will appear beside each field.</p></div></div>
   <form method="post">
     {% csrf_token %}
-    {% if form.non_field_errors %}<div class="notice error">{{ form.non_field_errors }}</div>{% endif %}
+    {% if form.non_field_errors %}<div class="notice error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="detail">
     {% for field in form %}
       <div class="field">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span aria-hidden="true">*</span>{% endif %}</label>
         {{ field }}
         {% if field.help_text %}<small class="muted">{{ field.help_text|safe }}</small>{% endif %}
-        {% if field.errors %}<div class="errorlist">{{ field.errors }}</div>{% endif %}
+        {% if field.errors %}<div class="errorlist" role="alert">{{ field.errors }}</div>{% endif %}
       </div>
     {% endfor %}
-    <div class="actions"><button type="submit">Create employee login</button><a class="btn secondary" href="{% url 'employee_directory' %}">Cancel</a></div>
+    </div>
+    <div class="actions"><button type="submit">Create employee account</button><a class="btn secondary" href="{% url 'employee_directory' %}">Cancel</a></div>
   </form>
 </section>
 {% endblock %}
